@@ -3,6 +3,18 @@
 
 An online job portal for recruitment and job searching.
 
+## Table of Contents
+- [Authors](#authors)
+- [Tech Stack](#tech-stack)
+- [Run Locally](#run-locally)
+- [Features](#features)
+  - [Basic Account Features](#basic-account-features)
+  - [System Administration](#system-administration)
+  - [Job Posting](#job-posting)
+  - [Job Search](#job-search)
+  - [Feedback System](#feedback-system)
+  - [Job Recommendations](#job-recommendations)
+- [Demo](#demo)
 
 ## Authors
 
