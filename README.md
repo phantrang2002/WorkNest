@@ -38,6 +38,8 @@ Go to the project's backend directory:
 cd api
 ```
 
+Add the appropriate `appsettings.json` file
+
 Run the Backend Server:  
 
 ```bash
@@ -97,3 +99,6 @@ npm run dev
 
 ## 🎬 Demo  
 _(Coming Soon...)_
+
+## 📢 Note  
+🚧 This project is still under development and updates are ongoing. Stay tuned for more features and improvements! 🚀
