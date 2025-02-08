@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -41,15 +40,16 @@ body {
 
 @layer utilities {
   .bg-gradient-radial {
-      background: radial-gradient(circle, #ffffff, #f3eafa);
+    background: radial-gradient(circle, #ffffff, #f3eafa);
   }
 }
 
 
-html, body {
+html,
+body {
   width: 100%;
   overflow-x: hidden;
-  margin: 0; 
+  margin: 0;
   padding: 0;
   background-color: white;
 }
@@ -58,8 +58,8 @@ html, body {
 .site-header {
   color: var(--black-color);
   position: sticky;
-  z-index: 999; 
-  box-shadow: 0 -6px 10px 5px rgba(0,0,0,0.5);
+  z-index: 999;
+  box-shadow: 0 -6px 10px 5px rgba(0, 0, 0, 0.5);
 }
 
 .custom-radio {
@@ -67,14 +67,14 @@ html, body {
   align-items: center;
   cursor: pointer;
   margin-right: 20px;
-  
+
   font-size: 0.875rem;
   position: relative;
-  color:var(--black-color);
+  color: var(--black-color);
 }
 
 .custom-radio input {
-  display: none; 
+  display: none;
 }
 
 .custom-radio .checkmark {
@@ -89,14 +89,14 @@ html, body {
 
 .custom-radio.selected .checkmark {
   border-color: var(--primary-color);
-  background-color: var(--primary-color); 
+  background-color: var(--primary-color);
 }
 
-.custom-radio.selected input:checked + .checkmark {
+.custom-radio.selected input:checked+.checkmark {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
 }
- 
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -125,6 +125,7 @@ html, body {
     transform: translateY(-20px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;
@@ -175,7 +176,7 @@ html, body {
   border-radius: 5px;
 }
 
-.text-info, 
+.text-info,
 .modal-body input[type="file"] {
   font-size: 1rem;
   color: #555;
@@ -183,7 +184,7 @@ html, body {
   background: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 5px;
-  min-height: 40px; /* Đặt chiều cao tối thiểu */
+  min-height: 40px;
   display: flex;
   align-items: center;
 }
@@ -221,46 +222,42 @@ html, body {
 }
 
 
-/* CSS cho phần tử description */
 .description-content {
-  padding-left: 20px; /* Thêm padding trái cho nội dung */
+  padding-left: 20px;
 }
 
 .description-content ul {
-  list-style-type: disc; /* Đảm bảo sử dụng bullet points cho <ul> */
-  padding-left: 20px; /* Tạo khoảng cách cho bullet points */
+  list-style-type: disc;
+  padding-left: 20px;
 }
 
 .description-content ol {
-  list-style-type: decimal; /* Đảm bảo sử dụng số cho <ol> */
-  padding-left: 20px; /* Tạo khoảng cách cho số */
+  list-style-type: decimal;
+  padding-left: 20px;
 }
 
 .description-content li {
-  margin-bottom: 0.5rem; /* Khoảng cách giữa các mục */
+  margin-bottom: 0.5rem;
 }
 
-/* Nếu bạn muốn thay đổi màu sắc cho các tiêu đề */
 .description-content h1,
 .description-content h2 {
-  color: #333; /* Màu chữ của tiêu đề */
+  color: #333;
 }
 
-/* Đảm bảo các thẻ <strong> trong mô tả cũng được bôi đậm */
+
 .description-content strong {
   font-weight: bold;
-} 
+}
 
-  
 
-/* Thêm padding cho quill editor nếu cần */
 .ql-editor {
   font-size: 16px;
   min-height: 300px !important;
   padding-top: 10px;
   padding-bottom: 10px;
 }
-  
+
 .table-container {
   width: 100%;
   overflow: hidden;
@@ -275,5 +272,3 @@ html, body {
 .table-row:hover {
   background-color: #f1f1f1;
 }
- 
- 

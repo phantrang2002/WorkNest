@@ -8,15 +8,15 @@ const CVPage = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [fileCV, setFileCV] = useState<File | null>(null);
-  const [errorMessage, setErrorMessage] = useState(''); 
+  const [errorMessage, setErrorMessage] = useState('');
   const fileInput = useRef<HTMLInputElement | null>(null);
   const [userToken, setUserToken] = useState<string | null>(null);
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
-        setUserToken(token); 
+      setUserToken(token);
     }
-}, []);
+  }, []);
 
   const validateForm = () => {
     if (!title.trim()) {
@@ -54,16 +54,16 @@ const CVPage = () => {
     formData.append('Title', title);
     formData.append('Description', description);
     formData.append('FileCV', fileCV as File);
- 
+
 
     if (userToken) {
       try {
-        const response = await PostSampleCV(formData, userToken); // Replace with actual API call
-        toast.success("CV template uploaded successfully!");  
+        const response = await PostSampleCV(formData, userToken);
+        toast.success("CV template uploaded successfully!");
         setTitle('');
         setDescription('');
         setFileCV(null);
-        if (fileInput.current) fileInput.current.value = ''; // Clear the file input
+        if (fileInput.current) fileInput.current.value = '';
       } catch (error) {
         console.error('Error uploading CV template:', error);
         setErrorMessage('Failed to upload CV template.');
@@ -119,7 +119,7 @@ const CVPage = () => {
           />
         </div>
 
-        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>} 
+        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
 
         <button
           onClick={handleSubmit}
@@ -130,6 +130,6 @@ const CVPage = () => {
       </div>
     </AdminLayout>
   );
-}; 
+};
 
 export default CVPage;

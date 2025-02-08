@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import RootLayout from '@/app/layout';
 import Header from '@/components/Header';
 import { GetMyProfile, UploadAvatarProfile } from '@/api/candidateService';
-import { Avatar, Box, CircularProgress } from '@mui/material';
+import { Avatar } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { MdEdit } from 'react-icons/md';
 import router from 'next/router';
@@ -54,8 +54,8 @@ const MyProfile: React.FC = () => {
             }
         }
     };
-   
-    
+
+
     return (
         <RootLayout>
             <Header />
@@ -83,7 +83,7 @@ const MyProfile: React.FC = () => {
                                 onChange={handleAvatarUpload}
                             />
                         </div>
-                        <h1 className="mt-4 text-2xl font-bold">{profile?.name}</h1> 
+                        <h1 className="mt-4 text-2xl font-bold">{profile?.name}</h1>
                         <button
                             onClick={() => router.push('/my-profile/edit')}
                             className="flex items-center gap-2 rounded-md px-6 mt-4 py-2 bg-yellow-color text-white hover:bg-blue-700"
@@ -108,7 +108,7 @@ const MyProfile: React.FC = () => {
 
                         <div className="flex flex-col space-y-2">
                             <label className="text-xl font-semibold text-gray-700">Phone Number</label>
-                            <span className="text-lg text-gray-600">{profile.phoneNumber ?  profile.phoneNumber : "None"}</span>
+                            <span className="text-lg text-gray-600">{profile.phoneNumber ? profile.phoneNumber : "None"}</span>
                         </div>
 
                         <div className="flex flex-col space-y-2">
@@ -118,12 +118,12 @@ const MyProfile: React.FC = () => {
 
                         <div className="flex flex-col space-y-2">
                             <label className="text-xl font-semibold text-gray-700">Industry</label>
-                            <span className="text-lg text-gray-600">{profile.industry  ? profile.industry : "None"}</span>
+                            <span className="text-lg text-gray-600">{profile.industry ? profile.industry : "None"}</span>
                         </div>
 
                         <div className="flex flex-col space-y-2">
                             <label className="text-xl font-semibold text-gray-700">Description</label>
-                            <span className="text-lg text-gray-600">{profile.description  ? profile.description : "None"}</span>
+                            <span className="text-lg text-gray-600">{profile.description ? profile.description : "None"}</span>
                         </div>
                     </div>
                 </div>

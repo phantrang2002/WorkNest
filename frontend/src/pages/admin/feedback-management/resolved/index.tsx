@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
 import { useRouter } from 'next/router';
-import { DeleteAJob, GetAllJobs } from '@/api/jobService';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination } from '@mui/material';
-import { DeleteASampleCV, GetAllSampleCV } from '@/api/sampleCVService';
-import { DeleteAPolicy, GetAllPolicy } from '@/api/policyService';
 import { GetResolvedContact } from '@/api/contactService';
- 
+
 
 interface Contact {
     contactID: string;
@@ -47,7 +44,7 @@ const ResolvedContactPage = () => {
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPageNumber(value);
-    }; 
+    };
 
     return (
 
@@ -71,9 +68,9 @@ const ResolvedContactPage = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '5%' }}>No.</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Name</TableCell> 
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Email</TableCell> 
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Title</TableCell>  
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Name</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Email</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Title</TableCell>
 
                             <TableCell
                                 sx={{
@@ -87,10 +84,10 @@ const ResolvedContactPage = () => {
                                 }}
                             >
                                 Description
-                            </TableCell> 
+                            </TableCell>
                         </TableRow>
                     </TableHead>
- 
+
                     <TableBody>
                         {contact && contact.length > 0 ? (
                             contact.map((contactItem, index) => (
@@ -111,7 +108,7 @@ const ResolvedContactPage = () => {
                                         className="text-gray-600 max-w-[200px]"
                                     >
                                         {contactItem.email}
-                                    </TableCell> 
+                                    </TableCell>
 
                                     {/* Description */}
                                     <TableCell
@@ -119,15 +116,15 @@ const ResolvedContactPage = () => {
                                         className="text-gray-600 max-w-[200px]"
                                     >
                                         {contactItem.problemTitle}
-                                    </TableCell> 
+                                    </TableCell>
 
-                                     {/* Description */}
-                                     <TableCell
+                                    {/* Description */}
+                                    <TableCell
                                         align="left"
                                         className="text-gray-600 max-w-[200px]"
                                     >
                                         {contactItem.description}
-                                    </TableCell> 
+                                    </TableCell>
                                 </TableRow>
                             ))
                         ) : (

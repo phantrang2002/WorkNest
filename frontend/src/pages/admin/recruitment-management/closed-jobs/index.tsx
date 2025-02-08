@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
 import { useRouter } from 'next/router';
-import { ApproveAJob, GetEmLockedJobs, GetPendingJobs, UnlockAJob } from '@/api/jobService';
+import { GetEmLockedJobs, UnlockAJob } from '@/api/jobService';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -18,68 +18,65 @@ interface Job {
 
 const CloseJobPage = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [pageNumber, setPageNumber] = useState(1);  
-  const [pageSize] = useState(7); 
-  const [totalPages, setTotalPages] = useState(0);  
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageSize] = useState(7);
+  const [totalPages, setTotalPages] = useState(0);
   const router = useRouter();
   const [userToken, setUserToken] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
-        setUserToken(token); 
+      setUserToken(token);
     }
-}, []);
+  }, []);
 
-const fetchJobs = async () => {
-  try {
-    const response: any = await GetEmLockedJobs(pageNumber, pageSize);
-    console.log(response);
-    setJobs(response.jobPostings);
-    setTotalPages(Math.ceil(response.totalCount / pageSize));
-  } catch (error) {
-    console.error('Error fetching jobs:', error);
-  }
-};
+  const fetchJobs = async () => {
+    try {
+      const response: any = await GetEmLockedJobs(pageNumber, pageSize);
+      console.log(response);
+      setJobs(response.jobPostings);
+      setTotalPages(Math.ceil(response.totalCount / pageSize));
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  };
 
-  useEffect(() => { 
+  useEffect(() => {
     fetchJobs();
   }, [pageNumber, pageSize]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPageNumber(value);
-}; 
+  };
 
-const handleUnlock = async (jobPostingID: string) => { 
-  try {
-    if (!userToken) {
-      console.error('User token not available.');
-      return;
+  const handleUnlock = async (jobPostingID: string) => {
+    try {
+      if (!userToken) {
+        console.error('User token not available.');
+        return;
+      }
+
+      const response: any = await UnlockAJob(jobPostingID, userToken);
+
+      console.log(response);
+
+      toast.success('Job Unlock successfully.');
+
+      fetchJobs();
+    } catch (error) {
+      console.error('Error Unlock job:', error);
+      toast.error('Failed to Unlock the job. Please try again.');
     }
+  };
 
-    // Gọi API để xóa job posting
-    const response: any = await UnlockAJob(jobPostingID, userToken);
-
-    console.log(response);
-
-    // Thông báo thành công nếu cần
-    toast.success('Job Unlock successfully.');
-
-    // Làm mới danh sách công việc
-    fetchJobs();
-  } catch (error) {
-    console.error('Error Unlock job:', error);
-    toast.error('Failed to Unlock the job. Please try again.');
-  }
-};
-
-const handleViewDetail = (jobPostingID: string) => { 
-  router.push(`/jobs/${jobPostingID}`);
-};
+  const handleViewDetail = (jobPostingID: string) => {
+    router.push(`/jobs/${jobPostingID}`);
+  };
 
   return (
     <AdminLayout>
-           <h1 className="text-3xl font-semibold mb-6 text-black-color">Recruitment Management</h1>
+      <h1 className="text-3xl font-semibold mb-6 text-black-color">Recruitment Management</h1>
 
 
       {/* Job Title Input and Buttons */}
@@ -94,7 +91,7 @@ const handleViewDetail = (jobPostingID: string) => {
       </div>
 
       {/* Filter & Sorting Options */}
-      <div className="mb-4 flex items-center gap-6 text-gray-700"> 
+      <div className="mb-4 flex items-center gap-6 text-gray-700">
         <div className="flex items-center">
           <label htmlFor="sortCriteria" className="font-medium mr-2">Sort by:</label>
           <select
@@ -118,9 +115,8 @@ const handleViewDetail = (jobPostingID: string) => {
               <TableCell sx={{ fontWeight: 600 }}>Level</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Company</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Company Avatar</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Time Remaining</TableCell> 
-              <TableCell sx={{ fontWeight: 600 }}>Created On</TableCell> 
-
+              <TableCell sx={{ fontWeight: 600 }}>Time Remaining</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Created On</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -140,19 +136,19 @@ const handleViewDetail = (jobPostingID: string) => {
                 </TableCell>
                 <TableCell>{job.timeRemaining}</TableCell> {/* Display Time Remaining */}
                 <TableCell>
-                                                {new Date(job.createdOn).toLocaleString('en-CA', {
-                                                    year: 'numeric',
-                                                    month: '2-digit',
-                                                    day: '2-digit',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                    second: '2-digit',
-                                                    hour12: false
-                                                }).replace(',', '')}
-                                            </TableCell>
-                <TableCell>  
+                  {new Date(job.createdOn).toLocaleString('en-CA', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                  }).replace(',', '')}
+                </TableCell>
+                <TableCell>
                   <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 ml-2 transition"
-                  onClick={() => handleViewDetail(job.jobPostingID)}>View Details</button>
+                    onClick={() => handleViewDetail(job.jobPostingID)}>View Details</button>
                 </TableCell>
               </TableRow>
             ))}
@@ -160,14 +156,14 @@ const handleViewDetail = (jobPostingID: string) => {
         </Table>
       </TableContainer>
       <div className="flex justify-center mt-10 mb-5">
-                    <Pagination
-                        count={totalPages}
-                        page={pageNumber}
-                        onChange={handlePageChange}
-                        variant="outlined"
-                        shape="rounded"
-                    />
-                </div>               
+        <Pagination
+          count={totalPages}
+          page={pageNumber}
+          onChange={handlePageChange}
+          variant="outlined"
+          shape="rounded"
+        />
+      </div>
 
     </AdminLayout>
   );

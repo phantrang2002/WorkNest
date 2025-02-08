@@ -6,8 +6,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { MdAccessTime } from 'react-icons/md';
 import { Pagination, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
-import { IoLocationOutline } from 'react-icons/io5';
-import Link from 'next/link';
 
 interface PostedJob {
   jobPostingID: string;
@@ -114,7 +112,7 @@ const locations = [
 ];
 
 const PostedJobPage = () => {
-  const [allJobs, setAllJobs] = useState<PostedJob[]>([]); // Lưu trữ tất cả các job
+  const [allJobs, setAllJobs] = useState<PostedJob[]>([]);
   const [filteredJobs, setFilteredJobs] = useState<PostedJob[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize] = useState(4);
@@ -136,7 +134,7 @@ const PostedJobPage = () => {
     const fetchPostedJobs = async () => {
       if (!userToken) return;
       try {
-        const response: any = await GetPostedJob(1, 1000, userToken); // Tải tất cả các job một lần
+        const response: any = await GetPostedJob(1, 1000, userToken);
         setAllJobs(response.jobPostings);
       } catch (error) {
         console.error('Error fetching posted jobs:', error);
@@ -163,7 +161,7 @@ const PostedJobPage = () => {
     }
 
     setFilteredJobs(filtered);
-    setTotalPages(Math.ceil(filtered.length / pageSize)); // Cập nhật lại số trang sau khi lọc
+    setTotalPages(Math.ceil(filtered.length / pageSize));
   }, [searchTerm, selectedIndustry, selectedLocation, allJobs]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -184,7 +182,6 @@ const PostedJobPage = () => {
     setSelectedLocation('');
   };
 
-  // Lấy các job hiện tại trên trang (sau khi lọc)
   const currentJobs = filteredJobs.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
 
   return (
@@ -278,7 +275,7 @@ const PostedJobPage = () => {
 };
 
 // PostedJobCard Component
-const PostedJobCard = ({ job, onApply, onViewApplicants }: { job: PostedJob; onApply: () => void; onViewApplicants: () => void }) => {   
+const PostedJobCard = ({ job, onApply, onViewApplicants }: { job: PostedJob; onApply: () => void; onViewApplicants: () => void }) => {
   const formattedCreateDate = new Date(job.createdOn).toLocaleString('en-US', {
     year: 'numeric',
     month: '2-digit',
@@ -286,16 +283,16 @@ const PostedJobCard = ({ job, onApply, onViewApplicants }: { job: PostedJob; onA
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-    hour12: false, // Sử dụng định dạng 24 giờ
-  }).replace(',', ''); // Loại bỏ dấu phẩy giữa ngày và giờ
-  
+    hour12: false,
+  }).replace(',', '');
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center bg-white p-6 rounded-lg shadow-md transform transition-transform hover:scale-103 hover:shadow-lg">
       {/* Employer Avatar */}
       <div className="w-16 h-16 flex-shrink-0 mb-4 sm:mb-0">
         {job.companyLogo ? (
           <Image
-            src={job.companyLogo || 'D:/WorkNest/frontend/src/app/assets/images/default-avatar.jpg'} 
+            src={job.companyLogo || 'D:/WorkNest/frontend/src/app/assets/images/default-avatar.jpg'}
             alt="Company Logo"
             width={64}
             height={64}
@@ -311,40 +308,39 @@ const PostedJobCard = ({ job, onApply, onViewApplicants }: { job: PostedJob; onA
         <h2 className="text-xl font-bold text-black-color">{job.title}</h2>
         <p className="text-gray-600">{job.position}</p>
         <div className="flex flex-wrap items-center gap-2 text-sm">
-  <div className="flex items-center bg-gray-200 px-2 py-1 rounded-md text-gray-700">
-    <span>{job.location}</span>
-  </div>
+          <div className="flex items-center bg-gray-200 px-2 py-1 rounded-md text-gray-700">
+            <span>{job.location}</span>
+          </div>
 
-  <div
-    className={`flex items-center px-2 py-1 rounded-md ${
-      job.timeRemaining === "Expired"
-        ? "bg-red-500 text-white"
-        : "bg-gray-200 text-gray-700"
-    }`}
-  >
-    {job.timeRemaining === "Expired" ? (
-      <span>Expired</span>
-    ) : (
-      <>
-        <MdAccessTime className="text-primary-color mr-1" />
-        <span className="font-semibold mr-1.5">{job.timeRemaining}</span>
-        <span>left to be expired</span>
-      </>
-    )}
-  </div>
+          <div
+            className={`flex items-center px-2 py-1 rounded-md ${job.timeRemaining === "Expired"
+                ? "bg-red-500 text-white"
+                : "bg-gray-200 text-gray-700"
+              }`}
+          >
+            {job.timeRemaining === "Expired" ? (
+              <span>Expired</span>
+            ) : (
+              <>
+                <MdAccessTime className="text-primary-color mr-1" />
+                <span className="font-semibold mr-1.5">{job.timeRemaining}</span>
+                <span>left to be expired</span>
+              </>
+            )}
+          </div>
 
-  {job.lockFlg === 1 && (
-    <div className="flex items-center px-2 py-1 rounded-md bg-red-500 text-white">
-      <span>Locked</span>
-    </div>
-  )}
+          {job.lockFlg === 1 && (
+            <div className="flex items-center px-2 py-1 rounded-md bg-red-500 text-white">
+              <span>Locked</span>
+            </div>
+          )}
 
-  {job.lockFlg === 2 && (
-    <div className="flex items-center px-2 py-1 rounded-md bg-yellow-500 text-white">
-      <span>Closed</span>
-    </div>
-  )}
-</div>
+          {job.lockFlg === 2 && (
+            <div className="flex items-center px-2 py-1 rounded-md bg-yellow-500 text-white">
+              <span>Closed</span>
+            </div>
+          )}
+        </div>
 
 
         {/* Created On */}
@@ -374,22 +370,20 @@ const PostedJobCard = ({ job, onApply, onViewApplicants }: { job: PostedJob; onA
       </div>
 
       {/* CV File and Apply Button */}
-{/* CV File and Apply Button */}
-<div className="flex flex-row sm:gap-0 gap-2 sm:flex-col items-end justify-center mt-4 sm:mt-0 sm:ml-4 sm:w-fit w-full">
-  <button 
-    onClick={onViewApplicants}  
-    className="w-full sm:w-auto bg-white border border-brighter-color text-brighter-color px-4 py-2 rounded-md mt-2 hover:bg-yellow-color hover:text-white hover:border-yellow-color whitespace-nowrap">
-    View Applicants
-  </button>
+      {/* CV File and Apply Button */}
+      <div className="flex flex-row sm:gap-0 gap-2 sm:flex-col items-end justify-center mt-4 sm:mt-0 sm:ml-4 sm:w-fit w-full">
+        <button
+          onClick={onViewApplicants}
+          className="w-full sm:w-auto bg-white border border-brighter-color text-brighter-color px-4 py-2 rounded-md mt-2 hover:bg-yellow-color hover:text-white hover:border-yellow-color whitespace-nowrap">
+          View Applicants
+        </button>
 
-  <button 
-    onClick={onApply} 
-    className="w-full sm:w-auto bg-brighter-color border border-brighter-color text-white px-4 py-2 rounded-md mt-2 hover:bg-primary-color">
-    View details
-  </button>
-</div>
-
-
+        <button
+          onClick={onApply}
+          className="w-full sm:w-auto bg-brighter-color border border-brighter-color text-white px-4 py-2 rounded-md mt-2 hover:bg-primary-color">
+          View details
+        </button>
+      </div>
     </div>
   );
 };

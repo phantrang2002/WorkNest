@@ -24,7 +24,7 @@ const JobApplicants: React.FC = () => {
     const [openModal, setOpenModal] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [filterStatusFilter, setFilterStatusFilter] = useState<number | null>(null);
-    const [sortCriteria, setSortCriteria] = useState('oldApplyDate'); 
+    const [sortCriteria, setSortCriteria] = useState('oldApplyDate');
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -95,7 +95,6 @@ const JobApplicants: React.FC = () => {
             filtered = filtered.filter(applicant => applicant.status === filterStatusFilter);
         }
 
-        // Sort applicants based on selected criteria
         filtered = filtered.sort((a, b) => {
             if (sortCriteria === 'name') {
                 return a.applicantName.localeCompare(b.applicantName);
@@ -119,7 +118,7 @@ const JobApplicants: React.FC = () => {
                 setOpenModal(false);
 
                 await UpdateApplicantStatus(token, storedJobId, selectedApplicantId, selectedStatus);
-                 
+
                 setApplicants(prevApplicants =>
                     prevApplicants.map(applicant =>
                         applicant.applicantId === selectedApplicantId ? { ...applicant, status: selectedStatus } : applicant
@@ -158,24 +157,24 @@ const JobApplicants: React.FC = () => {
         setSelectedApplicantId(null);
     };
 
-    const handleViewDetail = (applicantId: string) => { 
+    const handleViewDetail = (applicantId: string) => {
         router.push(`/candidates/${applicantId}`);
-      };
+    };
 
 
-      return (
+    return (
         <RootLayout>
             <Header />
             <div className="container sm:mx-auto py-8">
                 {loading && <p>Loading applicants...</p>}
                 {error && <Alert severity="error">{error}</Alert>}
-    
+
                 {!loading && !error && applicants.length > 0 && (
                     <TableContainer component={Paper} elevation={3} sx={{ padding: 3 }}>
                         <div className="bg-darker-color p-3 rounded-t-lg -mx-6 -mt-6 mb-4">
                             <h2 className="text-lg font-semibold text-white ml-4">Applicants List</h2>
                         </div>
-    
+
                         {/* Search bar */}
                         <TextField
                             label="Search by Name or Email"
@@ -185,7 +184,7 @@ const JobApplicants: React.FC = () => {
                             fullWidth
                             className="mb-4"
                         />
-    
+
                         {/* Filter and Sort options */}
                         <div className="mb-4 text-black-color flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                             <div className="flex items-center">
@@ -202,7 +201,7 @@ const JobApplicants: React.FC = () => {
                                     <option value="2">Suitable</option>
                                 </select>
                             </div>
-    
+
                             <div className="flex items-center">
                                 <label htmlFor="sortCriteria" className="font-medium mr-2">Sort by:</label>
                                 <select
@@ -217,79 +216,77 @@ const JobApplicants: React.FC = () => {
                                 </select>
                             </div>
                         </div>
-    
+
                         <div className="overflow-x-auto">
-        <Table className="min-w-full table-fixed">
-    <TableHead>
-        <TableRow>
-            <TableCell sx={{ fontWeight: 600 }} className="sm:table-cell">No.</TableCell>
-            <TableCell sx={{ fontWeight: 600 }} className="sm:table-cell">Name</TableCell>
-            {/* Các cột không cần thiết sẽ bị ẩn trên màn hình nhỏ */}
-            <TableCell sx={{ fontWeight: 600 }} className="hidden sm:table-cell">Email</TableCell>
-            <TableCell sx={{ fontWeight: 600 }} className="hidden sm:table-cell">Phone number</TableCell>
-            <TableCell sx={{ fontWeight: 600 }} className="sm:table-cell">CV</TableCell>
-            <TableCell sx={{ fontWeight: 600 }} className="hidden sm:table-cell">Apply date</TableCell>
-            <TableCell sx={{ fontWeight: 600 }} className="hidden sm:table-cell">Profile</TableCell>
-            <TableCell sx={{ fontWeight: 600 }} className="sm:table-cell">Status</TableCell>
-        </TableRow>
-    </TableHead>
-    {filteredApplicants.length > 0 && (
-        <TableBody>
-            {filteredApplicants.map((applicant, index) => {
-                const fileUrl = `http://localhost:5037/${applicant.cvFile}`;
+                            <Table className="min-w-full table-fixed">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell sx={{ fontWeight: 600 }} className="sm:table-cell">No.</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }} className="sm:table-cell">Name</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }} className="hidden sm:table-cell">Email</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }} className="hidden sm:table-cell">Phone number</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }} className="sm:table-cell">CV</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }} className="hidden sm:table-cell">Apply date</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }} className="hidden sm:table-cell">Profile</TableCell>
+                                        <TableCell sx={{ fontWeight: 600 }} className="sm:table-cell">Status</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                {filteredApplicants.length > 0 && (
+                                    <TableBody>
+                                        {filteredApplicants.map((applicant, index) => {
+                                            const fileUrl = `http://localhost:5037/${applicant.cvFile}`;
 
-                return (
-                    <TableRow key={index}>
-                        <TableCell className="sm:table-cell">{(pageNumber - 1) * pageSize + index + 1}</TableCell>
-                        <TableCell className="sm:table-cell">{applicant.applicantName}</TableCell>
-                        {/* Ẩn cột Email và Phone number trên màn hình nhỏ */}
-                        <TableCell className="hidden sm:table-cell">{applicant.applicantEmail}</TableCell>
-                        <TableCell className="hidden sm:table-cell">{applicant.applicantPhone}</TableCell>
-                        <TableCell className="sm:table-cell">
-                            <a href={fileUrl} className="text-primary-color hover:underline" target="_blank" rel="noopener noreferrer">
-                                View CV
-                            </a>
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell">
-                            {new Date(applicant.applyDate).toLocaleString('en-CA', {
-                                year: 'numeric',
-                                month: '2-digit',
-                                day: '2-digit',
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit',
-                                hour12: false
-                            }).replace(',', '')}
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell">
-                            <button
-                                onClick={() => handleViewDetail(applicant.applicantId)}
-                                className="px-4 py-2 bg-primary-color text-white rounded-md hover:bg-yellow-color transition"
-                            >
-                                View Details
-                            </button>
-                        </TableCell>
-                        <TableCell className="sm:w-32 w-10 sm:table-cell">
-                            <Select
-                                value={applicant.status}
-                                onChange={(e) => handleStatusChange(applicant.applicantId, e.target.value as number)}
-                                displayEmpty
-                                sx={{ minWidth: 80, maxWidth: 200, height: 30 }}
-                            >
-                                <MenuItem value={0}>Not reviewed yet</MenuItem>
-                                <MenuItem value={1}>Not Suitable</MenuItem>
-                                <MenuItem value={2}>Suitable</MenuItem>
-                            </Select>
-                        </TableCell>
+                                            return (
+                                                <TableRow key={index}>
+                                                    <TableCell className="sm:table-cell">{(pageNumber - 1) * pageSize + index + 1}</TableCell>
+                                                    <TableCell className="sm:table-cell">{applicant.applicantName}</TableCell>
+                                                    <TableCell className="hidden sm:table-cell">{applicant.applicantEmail}</TableCell>
+                                                    <TableCell className="hidden sm:table-cell">{applicant.applicantPhone}</TableCell>
+                                                    <TableCell className="sm:table-cell">
+                                                        <a href={fileUrl} className="text-primary-color hover:underline" target="_blank" rel="noopener noreferrer">
+                                                            View CV
+                                                        </a>
+                                                    </TableCell>
+                                                    <TableCell className="hidden sm:table-cell">
+                                                        {new Date(applicant.applyDate).toLocaleString('en-CA', {
+                                                            year: 'numeric',
+                                                            month: '2-digit',
+                                                            day: '2-digit',
+                                                            hour: '2-digit',
+                                                            minute: '2-digit',
+                                                            second: '2-digit',
+                                                            hour12: false
+                                                        }).replace(',', '')}
+                                                    </TableCell>
+                                                    <TableCell className="hidden sm:table-cell">
+                                                        <button
+                                                            onClick={() => handleViewDetail(applicant.applicantId)}
+                                                            className="px-4 py-2 bg-primary-color text-white rounded-md hover:bg-yellow-color transition"
+                                                        >
+                                                            View Details
+                                                        </button>
+                                                    </TableCell>
+                                                    <TableCell className="sm:w-32 w-10 sm:table-cell">
+                                                        <Select
+                                                            value={applicant.status}
+                                                            onChange={(e) => handleStatusChange(applicant.applicantId, e.target.value as number)}
+                                                            displayEmpty
+                                                            sx={{ minWidth: 80, maxWidth: 200, height: 30 }}
+                                                        >
+                                                            <MenuItem value={0}>Not reviewed yet</MenuItem>
+                                                            <MenuItem value={1}>Not Suitable</MenuItem>
+                                                            <MenuItem value={2}>Suitable</MenuItem>
+                                                        </Select>
+                                                    </TableCell>
 
 
-                    </TableRow>
-                );
-            })}
-        </TableBody>
-    )}
-</Table>
-</div>
+                                                </TableRow>
+                                            );
+                                        })}
+                                    </TableBody>
+                                )}
+                            </Table>
+                        </div>
 
                     </TableContainer>
                 )}
@@ -302,7 +299,7 @@ const JobApplicants: React.FC = () => {
                         shape="rounded"
                     />
                 </div>
-    
+
                 {/* Modal Dialog */}
                 <Dialog
                     open={openModal}
@@ -329,6 +326,6 @@ const JobApplicants: React.FC = () => {
             </div>
         </RootLayout>
     );
-}    
+}
 
 export default JobApplicants;

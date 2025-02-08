@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { GetAllSampleCVWithoutPage } from '@/api/sampleCVService'; // Assume API function is working
+import { GetAllSampleCVWithoutPage } from '@/api/sampleCVService';
 import RootLayout from '@/app/layout';
 import Header from '@/components/Header';
 import { Button, Card, CardContent, Typography, Box, Collapse } from '@mui/material';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css';
-import * as pdfjs from 'pdfjs-dist'; // Import pdfjs
+import * as pdfjs from 'pdfjs-dist';
 
 const SampleCVPage = () => {
   const [cvTemplates, setCvTemplates] = useState<any[]>([]);
@@ -25,8 +25,8 @@ const SampleCVPage = () => {
 
   return (
     <RootLayout>
-      <Header /> 
-      <Box sx={{ padding: 4 }}> 
+      <Header />
+      <Box sx={{ padding: 4 }}>
         <Box
           sx={{
             display: 'grid',
@@ -73,7 +73,7 @@ const SampleCVPage = () => {
                 {/* Display PDF */}
                 <Box sx={{ height: '400px', marginBottom: 2 }}>
                   <Worker workerUrl={`https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`}>
-                    <Viewer 
+                    <Viewer
                       fileUrl={`http://localhost:5037/api/${cv.fileCV}`}
                       renderError={(error) => (
                         <Typography variant="body2" color="error" align="center">

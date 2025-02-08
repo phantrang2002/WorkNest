@@ -4,14 +4,10 @@ import { Avatar, TextField } from '@mui/material';
 import Header from '@/components/Header';
 import { GetEmployerProfile, UploadAvatarProfile } from '@/api/employerService';
 import { MdAccessTime, MdEdit, MdOutlineGroups2 } from 'react-icons/md';
-import { FaEdit, FaMapMarkerAlt } from 'react-icons/fa';
-import { BiSolidEditAlt } from "react-icons/bi";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { FiCopy } from "react-icons/fi";
-import Loading from '@/components/Loading'; 
+import { FaMapMarkerAlt } from 'react-icons/fa';
+import Loading from '@/components/Loading';
 import dynamic from 'next/dynamic';
 import { IoLocationOutline } from 'react-icons/io5';
-import { Pagination } from '@mui/material'; 
 import router from 'next/router';
 import Image from 'next/image';
 import { QRCodeSVG } from 'qrcode.react';
@@ -29,21 +25,21 @@ interface Employer {
   industry: string;
   location: string;
   size: string;
-  description: string; 
+  description: string;
   jobPostings: Job[];
   lat?: number;
   lng?: number;
 }
 
 interface Job {
-    jobPostingID: string;
-    companyLogo: string;
-    companyName: string;
-    title: string;
-    position: string;
-    location: string;
-    timeRemaining: string;
-  }
+  jobPostingID: string;
+  companyLogo: string;
+  companyName: string;
+  title: string;
+  position: string;
+  location: string;
+  timeRemaining: string;
+}
 
 const EmployerProfilePage: React.FC = () => {
   const [profileData, setProfileData] = useState<Employer | null>(null);
@@ -51,33 +47,31 @@ const EmployerProfilePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [locationCoords, setLocationCoords] = useState<{ lat: number, lng: number } | null>(null);
-const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
- 
-  // This useEffect ensures that window is only accessed on the client-side
+  const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
-        setEmployerUrl(window.location.href);  // Set the current URL on the client-side
+      setEmployerUrl(window.location.href);
     }
-  }, []); 
-    
-    const handleCopyURL = () => {
-      navigator.clipboard.writeText(window.location.toString())
-      toast.success("URL copied to clipboard!");
-    }
-    
-    const fetchProfile = async () => {
-      const employerid = window.location.pathname.split('/')[2];
+  }, []);
+
+  const handleCopyURL = () => {
+    navigator.clipboard.writeText(window.location.toString())
+    toast.success("URL copied to clipboard!");
+  }
+
+  const fetchProfile = async () => {
+    const employerid = window.location.pathname.split('/')[2];
     if (!employerid) {
       setError('Employer ID is missing');
       return;
     }
-    
+
     setLoading(true);
     try {
-      const response: any = await GetEmployerProfile(employerid); // Use employerid here
+      const response: any = await GetEmployerProfile(employerid);
       setProfileData(response);
 
-      // Optionally fetch and set geolocation
       const location = response.location;
       const geocodeResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(location)}`);
       const geocodeData = await geocodeResponse.json();
@@ -86,7 +80,6 @@ const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
         const { lat, lon } = geocodeData[0];
         setLocationCoords({ lat: parseFloat(lat), lng: parseFloat(lon) });
       }
-
       setLoading(false);
     } catch (error) {
       setError('Error fetching profile.');
@@ -104,15 +97,15 @@ const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
     setSearchTerm(e.target.value);
   };
 
-  const handleViewDetail = (employerId : string) => {   
-    router.push(`/employers/${employerId }`);
+  const handleViewDetail = (employerId: string) => {
+    router.push(`/employers/${employerId}`);
   };
 
   return (
     <RootLayout>
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white z-50">
-          <Loading /> {/* Hoặc sử dụng một component loading nào đó */}
+          <Loading />
         </div>
       )}
       <Header />
@@ -138,7 +131,7 @@ const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
             </div>
           </div>
         </div>
-  
+
         {/* Main Content Section */}
         <div className="container mx-auto py-8 px-4 grid grid-cols-10 gap-8 w-full">
           {/* Left Section - Location and Description */}
@@ -150,7 +143,7 @@ const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
               </div>
               <p className="mt-4 text-gray-700">{profileData?.description}</p>
             </div>
-  
+
             {/* Location */}
             <div className="bg-white p-6 rounded-lg shadow-md h-fit">
               <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
@@ -160,7 +153,7 @@ const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
                 <FaMapMarkerAlt className="mr-2 text-darker-color" />
                 <span className="text-gray-700">Address: {profileData?.location}</span>
               </div>
-  
+
               {/* Map */}
               {locationCoords && (
                 <div style={{ height: '300px', width: '100%' }}>
@@ -180,7 +173,7 @@ const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
                 </div>
               )}
             </div>
-  
+
             {/* Sharing */}
             <div className="bg-white p-6 rounded-lg shadow-md h-fit">
               <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
@@ -199,13 +192,13 @@ const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
               </div>
             </div>
           </div>
-  
+
           {/* Right Section - Hiring */}
           <div className="col-span-10 sm:col-span-6 bg-white p-6 rounded-lg shadow-md">
             <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
               <h2 className="text-lg font-semibold text-white-color ml-4">Hiring</h2>
             </div>
-  
+
             <div className="mt-4">
               <TextField
                 label="Search for jobs"
@@ -216,7 +209,7 @@ const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
                 className="mb-4"
               />
             </div>
-  
+
             <div className="mt-4 space-y-4">
               {profileData?.jobPostings
                 ?.filter((job: Job) =>
@@ -231,7 +224,7 @@ const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
       </div>
     </RootLayout>
   );
-  
+
 };
 
 const JobCard = ({ job, onApply }: { job: Job; onApply: () => void }) => {
@@ -284,5 +277,5 @@ const JobCard = ({ job, onApply }: { job: Job; onApply: () => void }) => {
   );
 };
 
-  
+
 export default EmployerProfilePage;

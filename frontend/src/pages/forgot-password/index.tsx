@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import RootLayout from '@/app/layout';
-import { FaRegEnvelope } from "react-icons/fa"; 
+import { FaRegEnvelope } from "react-icons/fa";
 import { toast } from 'react-toastify';
 import { forgotPassword } from '@/api/accountService';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
-    
+
     const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault(); 
+        e.preventDefault();
 
         try {
             const response: any = await forgotPassword({ email });
@@ -18,9 +18,9 @@ const ForgotPassword = () => {
             if (!response) {
                 console.error("Response is null or undefined");
                 return;
-            } 
-            if(response.status == 200){                
-                sessionStorage.setItem('resetToken', response.resetToken);  
+            }
+            if (response.status == 200) {
+                sessionStorage.setItem('resetToken', response.resetToken);
                 setSuccessMessage('Please check your email for the password reset link!');
             }
         } catch (error: any) {
@@ -48,7 +48,7 @@ const ForgotPassword = () => {
                             <div className="py-10 flex flex-col items-center w-full">
                                 <h2 className="text-3xl font-bold text-primary-color mb-2">Reset Password</h2>
                                 <div className="border-2 w-10 border-primary-color inline-block mb-2"></div>
-                                <div className="flex justify-center my-2 w-full">                                         
+                                <div className="flex justify-center my-2 w-full">
                                     <div className="flex flex-col items-center w-full md:w-2/3">
                                         <form onSubmit={handleSubmit}>
                                             <div className="bg-gray-100 w-full sm:w-64 p-2 flex items-center mb-3">
@@ -62,8 +62,8 @@ const ForgotPassword = () => {
                                                     required
                                                 />
                                             </div>
-                                            <button 
-                                                type="submit"  
+                                            <button
+                                                type="submit"
                                                 className="border-2 border-primary-color text-primary-color rounded-full 
                                                 px-12 py-2 inline-block font-semibold
                                                 hover:text-white hover:bg-primary-color mt-5"

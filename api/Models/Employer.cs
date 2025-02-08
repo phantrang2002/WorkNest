@@ -7,32 +7,28 @@ namespace api.Models
     public class Employer
     {
         [Key]
-        [ForeignKey("Account")] // Foreign Key to Account.UserID
-        public string EmployerID { get; set; } // Primary Key as int
+        [ForeignKey("Account")]
+        public string EmployerID { get; set; }
 
         [Required]
         [MaxLength(200)]
-        public string EmployerName { get; set; } = string.Empty; // Employer Name
-        
-        public string Avatar { get; set; } = string.Empty; // Avatar image URL
+        public string EmployerName { get; set; } = string.Empty;
+
+        public string Avatar { get; set; } = string.Empty;
 
         [MaxLength(100)]
-        public string Industry { get; set; } = string.Empty; // Industry sector
+        public string Industry { get; set; } = string.Empty;
 
         [MaxLength(200)]
-        public string Location { get; set; } = string.Empty; // Employer Location
+        public string Location { get; set; } = string.Empty;
 
         [MaxLength(50)]
-        public string Size { get; set; } = string.Empty; // Size of the company
+        public string Size { get; set; } = string.Empty;
 
         [MaxLength(1000)]
-        public string Description { get; set; } = string.Empty; // Short description
+        public string Description { get; set; } = string.Empty;
 
-        // Navigation property to Account
         public virtual Account Account { get; set; }
-
-         // Navigation property for JobPostings
         public virtual ICollection<JobPosting> JobPostings { get; set; } = new List<JobPosting>();
-    
     }
 }

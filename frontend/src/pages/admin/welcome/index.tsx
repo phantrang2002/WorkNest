@@ -1,4 +1,3 @@
-// src/pages/admin/welcome.tsx
 import AdminLayout from '../../../app/adminLayout';
 
 const WelcomePage = () => {
@@ -10,9 +9,8 @@ const WelcomePage = () => {
             Welcome to the Admin Dashboard
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            This is the main content area of the welcome page. <br/> You can manage your admin settings here and monitor activities <br/> across the platform.
+            This is the main content area of the welcome page. <br /> You can manage your admin settings here and monitor activities <br /> across the platform.
           </p>
-          
         </div>
       </div>
     </AdminLayout>

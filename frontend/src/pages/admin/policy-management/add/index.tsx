@@ -1,21 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
-import { PostSampleCV } from '@/api/sampleCVService';
 import { PostPolicy } from '@/api/policyService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const AddPolicy = () => {
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState(''); 
+  const [description, setDescription] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState(''); 
   const [userToken, setUserToken] = useState<string | null>(null);
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
-        setUserToken(token); 
+      setUserToken(token);
     }
-}, []);
+  }, []);
 
   const validateForm = () => {
     if (!title.trim()) {
@@ -26,25 +24,25 @@ const AddPolicy = () => {
       setErrorMessage('Description is required.');
       return false;
     }
-    
+
     setErrorMessage('');
     return true;
   };
- 
+
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
     const formData = new FormData();
     formData.append('Title', title);
-    formData.append('Description', description); 
- 
+    formData.append('Description', description);
+
 
     if (userToken) {
       try {
-        const response = await PostPolicy(formData, userToken); // Replace with actual API call
+        const response = await PostPolicy(formData, userToken);
         toast.success('Policy posted successfully!');
         setTitle('');
-        setDescription('');  
+        setDescription('');
       } catch (error) {
         console.error('Error posting policy template:', error);
         toast.error('Failed to post policy template.');
@@ -85,9 +83,9 @@ const AddPolicy = () => {
             placeholder="Enter description"
             rows={4}
           />
-        </div> 
+        </div>
 
-        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>} 
+        {errorMessage && <p className="text-red-500 mb-4">{errorMessage}</p>}
 
         <button
           onClick={handleSubmit}
@@ -98,6 +96,6 @@ const AddPolicy = () => {
       </div>
     </AdminLayout>
   );
-}; 
+};
 
 export default AddPolicy;

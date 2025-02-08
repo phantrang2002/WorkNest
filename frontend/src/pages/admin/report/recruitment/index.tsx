@@ -26,8 +26,8 @@ const RecruitmentStatsPage = () => {
   const [pageSize] = useState(7); // Number of jobs per page
   const [totalPages, setTotalPages] = useState(0); // Total number of pages
   const [userToken, setUserToken] = useState<string | null>(null);
-  const [searchKeyword, setSearchKeyword] = useState(''); // State for search keyword
-  const [sortCriteria, setSortCriteria] = useState('name'); // State for sorting criteria
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [sortCriteria, setSortCriteria] = useState('name');
   const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
 
@@ -55,15 +55,14 @@ const RecruitmentStatsPage = () => {
   const handleSortChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSortCriteria(event.target.value as string);
   };
- 
+
   const filterJobs = (jobs: Job[], searchKeyword: string) => {
-    if (!searchKeyword) return jobs;  
+    if (!searchKeyword) return jobs;
     return jobs.filter(job =>
       job.title.toLowerCase().includes(searchKeyword.toLowerCase())
     );
   };
 
-  // Function to sort jobs based on selected criteria
   const sortJobs = (jobs: Job[], sortCriteria: string) => {
     const sortedJobs = [...jobs];
     if (sortCriteria === 'name') {
@@ -76,7 +75,6 @@ const RecruitmentStatsPage = () => {
     return sortedJobs;
   };
 
-  // Combined filter and sort logic
   const getFilteredAndSortedJobs = () => {
     let filteredJobs = filterJobs(jobs, searchKeyword);
     return sortJobs(filteredJobs, sortCriteria);
@@ -107,7 +105,7 @@ const RecruitmentStatsPage = () => {
 
   useEffect(() => {
     fetchJobs();
-  }, [pageNumber, pageSize]); 
+  }, [pageNumber, pageSize]);
 
   const handleViewDetail = (jobPostingID: string) => {
     router.push(`/jobs/${jobPostingID}`);
@@ -117,12 +115,10 @@ const RecruitmentStatsPage = () => {
     setPageNumber(value);
   };
 
-  // Open Modal
   const handleOpenModal = () => {
     setOpenModal(true);
   };
 
-  // Close Modal
   const handleCloseModal = () => {
     setOpenModal(false);
   };

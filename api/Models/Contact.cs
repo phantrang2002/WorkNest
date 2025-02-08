@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,7 +7,7 @@ namespace api.Models
     public class Contact
     {
         [Key]
-        public string ContactID { get; set; } // Primary Key
+        public string ContactID { get; set; }
 
         [Required]
         [MaxLength(255)]
@@ -16,7 +15,7 @@ namespace api.Models
 
         [Required]
         [MaxLength(255)]
-        [EmailAddress] 
+        [EmailAddress]
         public string Email { get; set; } = string.Empty;
 
         [MaxLength(255)]

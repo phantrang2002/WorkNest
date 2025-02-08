@@ -6,36 +6,32 @@ namespace api.Models
     [Table("Candidate")]
     public class Candidate
     {
-        // CandidateID là PK và cũng là FK đến Account.UserID
         [Key]
-        [ForeignKey("Account")] // Foreign Key to Account.UserID
-        public string CandidateID { get; set; } // Primary Key, FK từ Account.UserID
+        [ForeignKey("Account")]
+        public string CandidateID { get; set; }
         
         [Required]
         [MaxLength(200)]
-        public string Name { get; set; } = string.Empty; // Candidate Name
+        public string Name { get; set; } = string.Empty;
         
-        public string Avatar { get; set; } = string.Empty; // Avatar image URL
+        public string Avatar { get; set; } = string.Empty;
         
         [Required]
         [MaxLength(15)]
-        public string PhoneNumber { get; set; } = string.Empty; // Candidate Phone
+        public string PhoneNumber { get; set; } = string.Empty;
         
         [MaxLength(200)]
-        public string Location { get; set; } = string.Empty; // Candidate Location
+        public string Location { get; set; } = string.Empty;
 
-        public int Experience { get; set; } // Years of experience
+        public int Experience { get; set; }
         
         [MaxLength(100)]
-        public string Industry { get; set; } = string.Empty; // Industry sector
+        public string Industry { get; set; } = string.Empty;
 
         [MaxLength(1000)]
-        public string Description { get; set; } = string.Empty; // Short description
+        public string Description { get; set; } = string.Empty;
 
-        // Navigation property to Account
         public virtual Account Account { get; set; }
-
-          // Navigation property for ApplyForms
-        public List<ApplyForm> ApplyForms { get; set; } = new List<ApplyForm>(); // Candidate can have multiple ApplyForms
+        public List<ApplyForm> ApplyForms { get; set; } = new List<ApplyForm>();
     }
 }

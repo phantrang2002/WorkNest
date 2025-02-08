@@ -14,7 +14,6 @@ const ProfileEdit: React.FC = () => {
         industry: '',
         description: '',
     });
-    const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState("");
@@ -92,7 +91,7 @@ const ProfileEdit: React.FC = () => {
         }));
     };
 
-    const handleFormSubmit = async (e: React.FormEvent) => { 
+    const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
@@ -113,27 +112,24 @@ const ProfileEdit: React.FC = () => {
                 return;
             }
 
-            // Sending form data to the server
             const response: any = await EditMyProfile(token, formData);
-            // Check if response status is 200 (OK) and handle success
+
             console.log(response);
             if (response.message) {
                 setLoading(false);
                 setSuccessMessage("Profile updated successfully!");
                 setError("");
             } else {
-                // Handle unexpected status codes or any other errors
                 setError("An unexpected error occurred. Please try again.");
                 setSuccessMessage("");
             }
             setLoading(false);
         } catch (error: any) {
             if (error.response && error.response.data) {
-                // If there are validation errors, display them
                 if (error.response.data.errors) {
                     const errorMessages = Object.values(error.response.data.errors)
                         .flat()
-                        .join(", ");  // Flatten the array of errors and join them into a single string
+                        .join(", ");
                     setError(`Validation errors: ${errorMessages}`);
                     setSuccessMessage("");
                 } else if (error.response.data.error) {
@@ -216,7 +212,7 @@ const ProfileEdit: React.FC = () => {
                                 <select
                                     id="industry"
                                     name="industry"
-                                    value={profile.industry || ''}  // Default to empty string if not set
+                                    value={profile.industry || ''}
                                     onChange={handleInputChange}
                                     className="border border-gray-300 p-2.5 rounded text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >
@@ -248,7 +244,7 @@ const ProfileEdit: React.FC = () => {
                                     name="phoneNumber"
                                     value={profile.phoneNumber}
                                     onChange={handleInputChange}
-                                    className="border border-gray-300 p-2 rounded text-black focus:outline-none focus:ring-2 focus:ring-blue-500"                                     
+                                    className="border border-gray-300 p-2 rounded text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
                         </div>

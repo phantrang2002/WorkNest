@@ -1,19 +1,11 @@
-using System;
-using System.Runtime.InteropServices;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using api.Data;
-using api.Dtos.Account;
 using api.Dtos.JobPosting;
-using OfficeOpenXml;  // Đừng quên import thư viện EPPlusP
-using System.IO;
-using api.Interfaces;
+using OfficeOpenXml;
 using api.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SixLabors.ImageSharp.Drawing.Processing;
 
 namespace api.Controllers
 {
@@ -192,7 +184,6 @@ namespace api.Controllers
                 return Unauthorized("Candidate ID not found in token.");
             }
 
-            // Tính tổng số lượng công việc
             var totalJobCount = await _context.JobPostings
                 .Where(j => j.Time > DateTime.Now && j.Status == true)
                 .Where(j => j.LockFlg == 0)
@@ -491,221 +482,201 @@ namespace api.Controllers
 
             return Ok(new { TotalCount = totalJobCount, JobPostings = jobPostingResponses });
         }
-[HttpGet("download/job-postings-report/available-for-admin")]
-public async Task<IActionResult> GetAvailableJobPostingsReportForAdmin()
-{
-    var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
-    if (userRole != "3") // Nếu không phải admin (role = 3)
-    {
-        return Forbid(); // Trả về 403 Forbidden
-    }
-
-    // Lấy tất cả các công việc thỏa mãn điều kiện (Status = true và LockFlg != 1)
-    var jobPostings = await _context.JobPostings
-        .Include(j => j.Employer)
-        .Where(j => j.Status == true && j.LockFlg != 1)
-        .OrderByDescending(j => j.CreatedOn)
-        .ToListAsync();
-
-    if (jobPostings == null || jobPostings.Count == 0)
-    {
-        return NotFound(new { error = "No job postings found." });
-    }
-
-    // Tạo danh sách JobPostingResponses để bao gồm thông tin các công việc và thống kê ứng viên
-    var jobPostingResponses = new List<JobPostingWithApplyStatsDto>();
-
-    foreach (var jobPosting in jobPostings)
-    {
-        var totalApplications = await _context.ApplyForms
-            .Where(af => af.JobPostingID == jobPosting.JobPostingID)
-            .CountAsync();
-
-        var notReviewedCount = await _context.ApplyForms
-            .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 0)
-            .CountAsync();
-
-        var notSuitableCount = await _context.ApplyForms
-            .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 1)
-            .CountAsync();
-
-        var suitableCount = await _context.ApplyForms
-            .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 2)
-            .CountAsync();
-
-        jobPostingResponses.Add(new JobPostingWithApplyStatsDto
+        [HttpGet("download/job-postings-report/available-for-admin")]
+        public async Task<IActionResult> GetAvailableJobPostingsReportForAdmin()
         {
-            JobPostingID = jobPosting.JobPostingID,
-            CompanyLogo = jobPosting.Employer?.Avatar ?? "N/A",
-            CompanyName = jobPosting.Employer?.EmployerName ?? "N/A",
-            Title = jobPosting.Title ?? "N/A",
-            Position = jobPosting.Position ?? "N/A",
-            Location = jobPosting.Location ?? "N/A",
-            TimeRemaining = FormatTimeRemaining(jobPosting.Time) ?? "N/A",
-            Status = jobPosting.Status,
-            LockFlg = jobPosting.LockFlg,
-            CreatedOn = jobPosting.CreatedOn,
-            TotalApplications = totalApplications,
-            NotReviewedCount = notReviewedCount,
-            NotSuitableCount = notSuitableCount,
-            SuitableCount = suitableCount
-        });
-    }
-
-    // Tạo Excel
-    using (var package = new ExcelPackage())
-    {
-        var worksheet = package.Workbook.Worksheets.Add("Available Job Postings");
-
-        // Đặt tiêu đề cột
-        worksheet.Cells[1, 1].Value = "Job Posting ID";
-        worksheet.Cells[1, 2].Value = "Company Name";
-        worksheet.Cells[1, 3].Value = "Title";
-        worksheet.Cells[1, 4].Value = "Position";
-        worksheet.Cells[1, 5].Value = "Location";
-        worksheet.Cells[1, 6].Value = "Time Remaining";
-        worksheet.Cells[1, 7].Value = "Status";
-        worksheet.Cells[1, 8].Value = "Locked";
-        worksheet.Cells[1, 9].Value = "Created On";
-        worksheet.Cells[1, 10].Value = "Total Applications";
-        worksheet.Cells[1, 11].Value = "Not Reviewed";
-        worksheet.Cells[1, 12].Value = "Not Suitable";
-        worksheet.Cells[1, 13].Value = "Suitable";
-
-        // Thiết lập màu nền cho các ô tiêu đề (header) là màu vàng
-        using (var range = worksheet.Cells[1, 1, 1, 13])
-        {
-            range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
-            range.Style.Font.Bold = true; // Làm đậm chữ
-        }
-
-        // Điền dữ liệu vào các dòng
-        for (int i = 0; i < jobPostingResponses.Count; i++)
-        {
-            var job = jobPostingResponses[i];
-            worksheet.Cells[i + 2, 1].Value = job.JobPostingID;
-            worksheet.Cells[i + 2, 2].Value = job.CompanyName;
-            worksheet.Cells[i + 2, 3].Value = job.Title;
-            worksheet.Cells[i + 2, 4].Value = job.Position;
-            worksheet.Cells[i + 2, 5].Value = job.Location;
-            worksheet.Cells[i + 2, 6].Value = job.TimeRemaining;
-            worksheet.Cells[i + 2, 7].Value = job.Status ? "Available" : "Unavailable";
-            worksheet.Cells[i + 2, 8].Value = job.LockFlg switch
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (userRole != "3")
             {
-                0 => "-",
-                1 => "By Admin",
-                2 => "By Employer",
-                _ => "Unknown" // Default case if the value is not 0, 1, or 2
-            };
-            worksheet.Cells[i + 2, 9].Value = job.CreatedOn?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A";
-            worksheet.Cells[i + 2, 10].Value = job.TotalApplications;
-            worksheet.Cells[i + 2, 11].Value = job.NotReviewedCount;
-            worksheet.Cells[i + 2, 12].Value = job.NotSuitableCount;
-            worksheet.Cells[i + 2, 13].Value = job.SuitableCount;
-        }
+                return Forbid();
+            }
 
-        // Thiết lập độ rộng cột tự động
-        worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+            var jobPostings = await _context.JobPostings
+                .Include(j => j.Employer)
+                .Where(j => j.Status == true && j.LockFlg != 1)
+                .OrderByDescending(j => j.CreatedOn)
+                .ToListAsync();
 
-        // Generate the Excel file and convert it to byte array
-        var fileContents = package.GetAsByteArray();
-
-        // Set the filename with current date
-        string fileName = $"Recruitment_Stats_Report_{DateTime.Now:yyyy-MM-dd}.xlsx";
-
-        // Return the file for download
-        return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
-    }
-}
-
-
-
-       [HttpGet("download/job-postings-report/all")]
-public async Task<IActionResult> GetAllJobPostingsReport()
-{
-    var jobPostings = await _context.JobPostings
-        .Include(j => j.Employer)
-        .OrderByDescending(j => j.CreatedOn)
-        .ToListAsync();
-
-    if (jobPostings == null || jobPostings.Count == 0)
-    {
-        return NotFound(new { error = "No job postings found." });
-    }
-
-    var jobPostingResponses = jobPostings.Select(jobPosting => new GetAllJobDto
-    {
-        JobPostingID = jobPosting.JobPostingID,
-        CompanyName = jobPosting.Employer?.EmployerName ?? "N/A",
-        Title = jobPosting.Title ?? "N/A",
-        Position = jobPosting.Position ?? "N/A",
-        Location = jobPosting.Location ?? "N/A",
-        TimeRemaining = FormatTimeRemaining(jobPosting.Time) ?? "N/A",
-        Status = jobPosting.Status,
-        LockFlg = jobPosting.LockFlg,
-        CreatedOn = jobPosting.CreatedOn
-    }).ToList();
-
-    // Tạo Excel
-    using (var package = new ExcelPackage())
-    {
-        var worksheet = package.Workbook.Worksheets.Add("Job Postings");
-
-        // Đặt tiêu đề cột (bỏ logo)
-        worksheet.Cells[1, 1].Value = "Job Posting ID";
-        worksheet.Cells[1, 2].Value = "Company Name";
-        worksheet.Cells[1, 3].Value = "Title";
-        worksheet.Cells[1, 4].Value = "Position";
-        worksheet.Cells[1, 5].Value = "Location";
-        worksheet.Cells[1, 6].Value = "Time Remaining";
-        worksheet.Cells[1, 7].Value = "Status";
-        worksheet.Cells[1, 8].Value = "Locked";
-        worksheet.Cells[1, 9].Value = "Created On";
-
-        // Thiết lập màu nền cho tiêu đề cột (header) là màu xanh ngọc
-        using (var range = worksheet.Cells[1, 1, 1, 9]) // Chỉnh số cột để phù hợp với số lượng cột của bạn
-        {
-            range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Teal); // Màu xanh ngọc
-            range.Style.Font.Color.SetColor(System.Drawing.Color.White); // Màu chữ trắng
-            range.Style.Font.Bold = true; // Làm đậm chữ
-        }
-
-        // Điền dữ liệu vào các dòng
-        for (int i = 0; i < jobPostingResponses.Count; i++)
-        {
-            var job = jobPostingResponses[i];
-            worksheet.Cells[i + 2, 1].Value = job.JobPostingID;
-            worksheet.Cells[i + 2, 2].Value = job.CompanyName;
-            worksheet.Cells[i + 2, 3].Value = job.Title;
-            worksheet.Cells[i + 2, 4].Value = job.Position;
-            worksheet.Cells[i + 2, 5].Value = job.Location;
-            worksheet.Cells[i + 2, 6].Value = job.TimeRemaining;
-            worksheet.Cells[i + 2, 7].Value = job.Status ? "Available" : "Unavailable";
-            worksheet.Cells[i + 2, 8].Value = job.LockFlg switch
+            if (jobPostings == null || jobPostings.Count == 0)
             {
-                0 => "-",
-                1 => "By Admin",
-                2 => "By Employer",
-                _ => "Unknown" // Default case if the value is not 0, 1, or 2
-            };
-            worksheet.Cells[i + 2, 9].Value = job.CreatedOn?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A";
+                return NotFound(new { error = "No job postings found." });
+            }
+
+            var jobPostingResponses = new List<JobPostingWithApplyStatsDto>();
+
+            foreach (var jobPosting in jobPostings)
+            {
+                var totalApplications = await _context.ApplyForms
+                    .Where(af => af.JobPostingID == jobPosting.JobPostingID)
+                    .CountAsync();
+
+                var notReviewedCount = await _context.ApplyForms
+                    .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 0)
+                    .CountAsync();
+
+                var notSuitableCount = await _context.ApplyForms
+                    .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 1)
+                    .CountAsync();
+
+                var suitableCount = await _context.ApplyForms
+                    .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 2)
+                    .CountAsync();
+
+                jobPostingResponses.Add(new JobPostingWithApplyStatsDto
+                {
+                    JobPostingID = jobPosting.JobPostingID,
+                    CompanyLogo = jobPosting.Employer?.Avatar ?? "N/A",
+                    CompanyName = jobPosting.Employer?.EmployerName ?? "N/A",
+                    Title = jobPosting.Title ?? "N/A",
+                    Position = jobPosting.Position ?? "N/A",
+                    Location = jobPosting.Location ?? "N/A",
+                    TimeRemaining = FormatTimeRemaining(jobPosting.Time) ?? "N/A",
+                    Status = jobPosting.Status,
+                    LockFlg = jobPosting.LockFlg,
+                    CreatedOn = jobPosting.CreatedOn,
+                    TotalApplications = totalApplications,
+                    NotReviewedCount = notReviewedCount,
+                    NotSuitableCount = notSuitableCount,
+                    SuitableCount = suitableCount
+                });
+            }
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Available Job Postings");
+                worksheet.Cells[1, 1].Value = "Job Posting ID";
+                worksheet.Cells[1, 2].Value = "Company Name";
+                worksheet.Cells[1, 3].Value = "Title";
+                worksheet.Cells[1, 4].Value = "Position";
+                worksheet.Cells[1, 5].Value = "Location";
+                worksheet.Cells[1, 6].Value = "Time Remaining";
+                worksheet.Cells[1, 7].Value = "Status";
+                worksheet.Cells[1, 8].Value = "Locked";
+                worksheet.Cells[1, 9].Value = "Created On";
+                worksheet.Cells[1, 10].Value = "Total Applications";
+                worksheet.Cells[1, 11].Value = "Not Reviewed";
+                worksheet.Cells[1, 12].Value = "Not Suitable";
+                worksheet.Cells[1, 13].Value = "Suitable";
+
+                using (var range = worksheet.Cells[1, 1, 1, 13])
+                {
+                    range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Yellow);
+                    range.Style.Font.Bold = true;
+                }
+
+                for (int i = 0; i < jobPostingResponses.Count; i++)
+                {
+                    var job = jobPostingResponses[i];
+                    worksheet.Cells[i + 2, 1].Value = job.JobPostingID;
+                    worksheet.Cells[i + 2, 2].Value = job.CompanyName;
+                    worksheet.Cells[i + 2, 3].Value = job.Title;
+                    worksheet.Cells[i + 2, 4].Value = job.Position;
+                    worksheet.Cells[i + 2, 5].Value = job.Location;
+                    worksheet.Cells[i + 2, 6].Value = job.TimeRemaining;
+                    worksheet.Cells[i + 2, 7].Value = job.Status ? "Available" : "Unavailable";
+                    worksheet.Cells[i + 2, 8].Value = job.LockFlg switch
+                    {
+                        0 => "-",
+                        1 => "By Admin",
+                        2 => "By Employer",
+                        _ => "Unknown" // Default case if the value is not 0, 1, or 2
+                    };
+                    worksheet.Cells[i + 2, 9].Value = job.CreatedOn?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A";
+                    worksheet.Cells[i + 2, 10].Value = job.TotalApplications;
+                    worksheet.Cells[i + 2, 11].Value = job.NotReviewedCount;
+                    worksheet.Cells[i + 2, 12].Value = job.NotSuitableCount;
+                    worksheet.Cells[i + 2, 13].Value = job.SuitableCount;
+                }
+
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                var fileContents = package.GetAsByteArray();
+
+                string fileName = $"Recruitment_Stats_Report_{DateTime.Now:yyyy-MM-dd}.xlsx";
+
+                return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
         }
 
-        // Thiết lập độ rộng cột tự động
-        worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
-        // Generate the Excel file and convert it to byte array
-        var fileContents = package.GetAsByteArray();
 
-        // Set the filename with current date
-        string fileName = $"JobPosting_All_{DateTime.Now:yyyy-MM-dd}.xlsx";
+        [HttpGet("download/job-postings-report/all")]
+        public async Task<IActionResult> GetAllJobPostingsReport()
+        {
+            var jobPostings = await _context.JobPostings
+                .Include(j => j.Employer)
+                .OrderByDescending(j => j.CreatedOn)
+                .ToListAsync();
 
-        // Return the file for download
-        return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
-    }
-}
+            if (jobPostings == null || jobPostings.Count == 0)
+            {
+                return NotFound(new { error = "No job postings found." });
+            }
+
+            var jobPostingResponses = jobPostings.Select(jobPosting => new GetAllJobDto
+            {
+                JobPostingID = jobPosting.JobPostingID,
+                CompanyName = jobPosting.Employer?.EmployerName ?? "N/A",
+                Title = jobPosting.Title ?? "N/A",
+                Position = jobPosting.Position ?? "N/A",
+                Location = jobPosting.Location ?? "N/A",
+                TimeRemaining = FormatTimeRemaining(jobPosting.Time) ?? "N/A",
+                Status = jobPosting.Status,
+                LockFlg = jobPosting.LockFlg,
+                CreatedOn = jobPosting.CreatedOn
+            }).ToList();
+
+            using (var package = new ExcelPackage())
+            {
+                var worksheet = package.Workbook.Worksheets.Add("Job Postings");
+
+                worksheet.Cells[1, 1].Value = "Job Posting ID";
+                worksheet.Cells[1, 2].Value = "Company Name";
+                worksheet.Cells[1, 3].Value = "Title";
+                worksheet.Cells[1, 4].Value = "Position";
+                worksheet.Cells[1, 5].Value = "Location";
+                worksheet.Cells[1, 6].Value = "Time Remaining";
+                worksheet.Cells[1, 7].Value = "Status";
+                worksheet.Cells[1, 8].Value = "Locked";
+                worksheet.Cells[1, 9].Value = "Created On";
+
+                using (var range = worksheet.Cells[1, 1, 1, 9])
+                {
+                    range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    range.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.Teal);
+                    range.Style.Font.Color.SetColor(System.Drawing.Color.White);
+                    range.Style.Font.Bold = true;
+                }
+
+                for (int i = 0; i < jobPostingResponses.Count; i++)
+                {
+                    var job = jobPostingResponses[i];
+                    worksheet.Cells[i + 2, 1].Value = job.JobPostingID;
+                    worksheet.Cells[i + 2, 2].Value = job.CompanyName;
+                    worksheet.Cells[i + 2, 3].Value = job.Title;
+                    worksheet.Cells[i + 2, 4].Value = job.Position;
+                    worksheet.Cells[i + 2, 5].Value = job.Location;
+                    worksheet.Cells[i + 2, 6].Value = job.TimeRemaining;
+                    worksheet.Cells[i + 2, 7].Value = job.Status ? "Available" : "Unavailable";
+                    worksheet.Cells[i + 2, 8].Value = job.LockFlg switch
+                    {
+                        0 => "-",
+                        1 => "By Admin",
+                        2 => "By Employer",
+                        _ => "Unknown" // Default case if the value is not 0, 1, or 2
+                    };
+                    worksheet.Cells[i + 2, 9].Value = job.CreatedOn?.ToString("yyyy-MM-dd HH:mm:ss") ?? "N/A";
+                }
+                worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                var fileContents = package.GetAsByteArray();
+
+                string fileName = $"JobPosting_All_{DateTime.Now:yyyy-MM-dd}.xlsx";
+
+                return File(fileContents, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+        }
 
 
 
@@ -817,8 +788,6 @@ public async Task<IActionResult> GetAllJobPostingsReport()
             return Ok(new { message = "Job posting locked successfully." });
         }
 
-        //bên FE khi đang là admin -> unlock cho job mà admin khóa (1->0) if lockflg = 0 thì hiện nút unlock
-        //khi đang là employer -> unlock cho job mà mình tự khóa (2->0) if lockflg = 2 và là của mình thì hiện nút unlock
         [Authorize]
         [HttpPut("unlock/{id}")]
         public async Task<IActionResult> UnlockJobPosting(string id)
@@ -874,7 +843,6 @@ public async Task<IActionResult> GetAllJobPostingsReport()
         [HttpGet("suitable")]
         public async Task<ActionResult<IEnumerable<GetAllJobDto>>> GetSuitableJobPostings(int pageNumber = 1, int pageSize = 10)
         {
-            // Lấy CandidateId từ token (Claims)
             var candidateId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             if (string.IsNullOrEmpty(candidateId))
@@ -882,7 +850,6 @@ public async Task<IActionResult> GetAllJobPostingsReport()
                 return Unauthorized(new { error = "Invalid token or user not authenticated." });
             }
 
-            // Lấy thông tin Candidate dựa trên CandidateId
             var candidate = await _context.Candidates
                 .FirstOrDefaultAsync(c => c.CandidateID == candidateId);
 
@@ -891,7 +858,6 @@ public async Task<IActionResult> GetAllJobPostingsReport()
                 return BadRequest(new { error = "Candidate or industry information not found." });
             }
 
-            // Lấy tổng số công việc phù hợp
             var totalJobCount = await _context.JobPostings
                 .Where(j => j.Time > DateTime.Now && j.Status == true)
                 .Where(j => j.LockFlg == 0)
@@ -899,7 +865,6 @@ public async Task<IActionResult> GetAllJobPostingsReport()
                 .Where(j => j.ExperienceExpect <= candidate.Experience)
                 .CountAsync();
 
-            // Lấy danh sách công việc phù hợp
             var jobPostings = await _context.JobPostings
                 .Include(j => j.Employer)
                 .Where(j => j.Time > DateTime.Now && j.Status == true)
@@ -916,7 +881,6 @@ public async Task<IActionResult> GetAllJobPostingsReport()
                 return NotFound(new { error = "No suitable job postings found." });
             }
 
-            // Chuẩn bị dữ liệu để trả về
             var jobPostingResponses = jobPostings.Select(jobPosting => new GetAllJobDto
             {
                 JobPostingID = jobPosting.JobPostingID,
@@ -931,7 +895,6 @@ public async Task<IActionResult> GetAllJobPostingsReport()
                 CreatedOn = jobPosting.CreatedOn
             }).ToList();
 
-            // Trả về danh sách công việc phù hợp
             return Ok(new { TotalCount = totalJobCount, JobPostings = jobPostingResponses });
         }
 
@@ -946,25 +909,21 @@ public async Task<IActionResult> GetAllJobPostingsReport()
             {
                 var query = _context.JobPostings.AsQueryable();
 
-                // Filter by jobTitle
                 if (!string.IsNullOrEmpty(jobTitle))
                 {
                     query = query.Where(j => j.Title.Contains(jobTitle));
                 }
 
-                // Filter by location
                 if (!string.IsNullOrEmpty(location))
                 {
                     query = query.Where(j => j.Location.Contains(location));
                 }
 
-                // Filter by status, lock flag, and time before applying pagination
                 var filteredQuery = query
                     .Where(j => j.Time > DateTime.Now && j.Status == true)
                     .Where(j => j.LockFlg == 0);
 
-                // Apply pagination
-                var totalJobCount = await filteredQuery.CountAsync(); // Calculate total count before pagination
+                var totalJobCount = await filteredQuery.CountAsync();
 
                 var jobPostings = await filteredQuery
                     .OrderByDescending(j => j.CreatedOn)
@@ -999,8 +958,5 @@ public async Task<IActionResult> GetAllJobPostingsReport()
                 return StatusCode(500, new { error = ex.Message });
             }
         }
-
-
-
     }
 }

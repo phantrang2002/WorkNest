@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import RootLayout from '@/app/layout';
 import Header from '@/components/Header';
 import { GetCandidate, GetMyProfile, UploadAvatarProfile } from '@/api/candidateService';
-import { Avatar, Box, CircularProgress } from '@mui/material';
+import { Avatar } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { MdEdit } from 'react-icons/md';
-import router from 'next/router';
-import { BiSolidEditAlt } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 
 const MyProfile: React.FC = () => {
@@ -24,13 +21,13 @@ const MyProfile: React.FC = () => {
 
     const fetchProfile = async () => {
         const candidateId = window.location.pathname.split('/')[2];
-    if (!candidateId) {
-      toast.error('Candidate ID is missing');
-      return;
-    }
+        if (!candidateId) {
+            toast.error('Candidate ID is missing');
+            return;
+        }
 
         setLoading(true);
-        try {  
+        try {
             const response: any = await GetCandidate(candidateId);
             setProfile(response);
         } catch (error) {
@@ -58,8 +55,8 @@ const MyProfile: React.FC = () => {
             }
         }
     };
-   
-    
+
+
     return (
         <RootLayout>
             <Header />
@@ -73,10 +70,10 @@ const MyProfile: React.FC = () => {
                                 sx={{ width: 120, height: 120 }}
                                 className="border-4 border-white shadow-lg"
                             />
-                            
+
                         </div>
-                        <h1 className="mt-4 text-2xl font-bold">{profile?.name}</h1> 
-                        
+                        <h1 className="mt-4 text-2xl font-bold">{profile?.name}</h1>
+
                     </div>
                 </div>
 
@@ -95,7 +92,7 @@ const MyProfile: React.FC = () => {
 
                         <div className="flex flex-col space-y-2">
                             <label className="text-xl font-semibold text-gray-700">Phone Number</label>
-                            <span className="text-lg text-gray-600">{profile.phoneNumber ?  profile.phoneNumber : "None"}</span>
+                            <span className="text-lg text-gray-600">{profile.phoneNumber ? profile.phoneNumber : "None"}</span>
                         </div>
 
                         <div className="flex flex-col space-y-2">
@@ -105,12 +102,12 @@ const MyProfile: React.FC = () => {
 
                         <div className="flex flex-col space-y-2">
                             <label className="text-xl font-semibold text-gray-700">Industry</label>
-                            <span className="text-lg text-gray-600">{profile.industry  ? profile.industry : "None"}</span>
+                            <span className="text-lg text-gray-600">{profile.industry ? profile.industry : "None"}</span>
                         </div>
 
                         <div className="flex flex-col space-y-2">
                             <label className="text-xl font-semibold text-gray-700">Description</label>
-                            <span className="text-lg text-gray-600">{profile.description  ? profile.description : "None"}</span>
+                            <span className="text-lg text-gray-600">{profile.description ? profile.description : "None"}</span>
                         </div>
                     </div>
                 </div>

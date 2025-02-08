@@ -20,21 +20,17 @@ const END_POINT = {
     UNLOCK_A_JOB: "job-posting/unlock",
     GET_ALL_JOBS_ADMIN_LOCKED: "job-posting/admin-locked",
     GET_ALL_JOBS_EM_LOCKED: "job-posting/employer-locked"
-
 };
 
 
 export const PostAJob = async (data: any, token: string | null) => {
     const response: AxiosResponse = await axiosClient.post(`${END_POINT.POST_A_JOB}`, data, {
         headers: {
-            Authorization: `${token}`, // Add token to headers
+            Authorization: `${token}`,
         },
     });
     return response;
 };
-
-
-
 
 export const GetAllJobs = async (pageNumber: any, pageSize: any) => {
     const response = await axiosClient.get(`${END_POINT.GET_ALL_JOBS}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
@@ -73,9 +69,6 @@ export const GetRecruitmentStatsDownload = async () => {
     }
 };
 
-
-
-
 export const GetAvaiJobs = async (pageNumber: any, pageSize: any) => {
     const response = await axiosClient.get(`${END_POINT.GET_ALL_JOBS_AVAI}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
     return response;
@@ -100,9 +93,6 @@ export const GetAvailableJobPostingsForAdmin = async (pageNumber: any, pageSize:
 
     return response;
 };
-
-
-
 
 export const GetSuitableJobs = async (token: string | null, pageNumber: any, pageSize: any) => {
     const response: AxiosResponse = await axiosClient.get(`${END_POINT.GET_SUITABLE_JOBS}?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
@@ -188,7 +178,7 @@ export const UnlockAJob = async (jobPostingId: string, token: string | null) => 
 export const EditJobPosting = async (jobPostingId: string, data: any, token: string | null) => {
     const response: AxiosResponse = await axiosClient.put(`${END_POINT.GET_JOB_BY_ID}/${jobPostingId}`, data, {
         headers: {
-            Authorization: `${token}`, // Add token to headers
+            Authorization: `${token}`,
         },
     });
     return response;

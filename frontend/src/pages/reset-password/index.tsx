@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import RootLayout from '@/app/layout';
-import { FaLock, FaRegEnvelope } from "react-icons/fa"; 
+import { FaLock, FaRegEnvelope } from "react-icons/fa";
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import { resetPassword } from '@/api/accountService';
 
 const ResetPassword = () => {
     const router = useRouter();
-    const { email } = router.query; // Lấy email từ URL
-    const [token, setToken] = useState<string | null>(null); // Token lấy từ sessionStorage
+    const { email } = router.query;
+    const [token, setToken] = useState<string | null>(null);
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
 
-    // Lấy token từ sessionStorage
     useEffect(() => {
-        const storedToken = sessionStorage.getItem('resetToken'); 
+        const storedToken = sessionStorage.getItem('resetToken');
         if (storedToken) {
             setToken(storedToken);
         } else {
@@ -27,17 +26,14 @@ const ResetPassword = () => {
         }
     }, []);
 
-    // Kiểm tra mật khẩu có hợp lệ không
+
     const isPasswordValid = (password: string) => {
         const passwordPattern = /^(?=.*[A-Za-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
-
         return passwordPattern.test(password);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        // Kiểm tra mật khẩu có hợp lệ không
         if (newPassword !== confirmPassword) {
             setError('Passwords do not match!');
             setSuccessMessage('');
@@ -90,7 +86,7 @@ const ResetPassword = () => {
                             <div className="py-10 flex flex-col items-center w-full">
                                 <h2 className="text-3xl font-bold text-primary-color mb-2">Set New Password</h2>
                                 <div className="border-2 w-10 border-primary-color inline-block mb-2"></div>
-                                <div className="flex justify-center my-2 w-full">                                         
+                                <div className="flex justify-center my-2 w-full">
                                     <div className="flex flex-col items-center w-full md:w-2/3">
                                         <form onSubmit={handleSubmit}>
                                             <div className="bg-gray-100 w-full sm:w-64 p-2 flex items-center mb-3">
@@ -117,8 +113,8 @@ const ResetPassword = () => {
                                                 />
                                             </div>
 
-                                            <button 
-                                                type="submit"  
+                                            <button
+                                                type="submit"
                                                 className="border-2 border-primary-color text-primary-color rounded-full 
                                                 px-12 py-2 inline-block font-semibold
                                                 hover:text-white hover:bg-primary-color mt-5"
@@ -128,7 +124,6 @@ const ResetPassword = () => {
                                             </button>
                                         </form>
 
-                                        {/* Hiển thị thông báo lỗi hoặc thành công */}
                                         {error && <p className="text-red-500 mt-4">{error}</p>}
                                         {successMessage && <p className="text-green-500 mt-4">{successMessage}</p>}
                                     </div>

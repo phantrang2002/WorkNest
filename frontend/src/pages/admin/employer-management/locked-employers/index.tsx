@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
 import { useRouter } from 'next/router';
-import { DeleteAJob, GetAllJobs } from '@/api/jobService';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination } from '@mui/material';
-import { DeleteASampleCV, GetAllSampleCV } from '@/api/sampleCVService';
-import { GetAvaiEmployer, GetLockedEmployer, LockAnEmployer, UnlockAnEmployer } from '@/api/employerService';
+import { GetLockedEmployer, UnlockAnEmployer } from '@/api/employerService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -50,26 +48,22 @@ const LockedEmployersPage = () => {
         setPageNumber(value);
     };
 
-    const handleViewDetail = (jobPostingID: string) => { 
+    const handleViewDetail = (jobPostingID: string) => {
         router.push(`/employers/${jobPostingID}`);
-      };
+    };
 
-    const handleUnlock= async (employerID: string) => {
+    const handleUnlock = async (employerID: string) => {
         try {
             if (!userToken) {
                 console.error('User token not available.');
                 return;
             }
 
-            // Call API to delete employer
             const response: any = await UnlockAnEmployer(employerID, userToken);
-
             console.log(response);
 
-            // Notify success
             toast.success('Employer unlocked successfully.');
 
-            // Refresh employer list
             fetchEmployer();
         } catch (error) {
             console.error('Error unlocking employer:', error);
@@ -147,7 +141,7 @@ const LockedEmployersPage = () => {
                                     <TableCell align="center">
                                         {/* Lock Button */}
                                         <button
-                                               onClick={() => handleUnlock(employerItem.employerID)} // assuming handleLock is implemented for locking
+                                            onClick={() => handleUnlock(employerItem.employerID)}
                                             className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition mr-2"
                                         >
                                             Unlock
@@ -155,7 +149,7 @@ const LockedEmployersPage = () => {
 
                                         {/* View Details Button */}
                                         <button
-                                             onClick={() => handleViewDetail(employerItem.employerID)} // assuming handleViewDetails is implemented for viewing details
+                                            onClick={() => handleViewDetail(employerItem.employerID)}
                                             className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-blue-600 transition"
                                         >
                                             View Details

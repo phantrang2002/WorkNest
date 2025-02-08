@@ -45,15 +45,15 @@ const AppliedJobsPage = () => {
   useEffect(() => {
     const fetchAppliedJobs = async () => {
       try {
-        const response: any = await GetAppliedJob(pageNumber, pageSize, userToken); 
-        setAppliedJobs(response.jobPostings); // Assuming the API response structure is similar
-        const pages = Math.ceil(response.totalCount / pageSize); 
-        setTotalPages(pages > 0 ? pages : 1); // Handle cases with 0 jobs properly
+        const response: any = await GetAppliedJob(pageNumber, pageSize, userToken);
+        setAppliedJobs(response.jobPostings);
+        const pages = Math.ceil(response.totalCount / pageSize);
+        setTotalPages(pages > 0 ? pages : 1);
       } catch (error) {
         console.error('Error fetching applied jobs:', error);
       }
     };
-    
+
     fetchAppliedJobs();
   }, [pageNumber, pageSize, userToken]);
 
@@ -82,14 +82,14 @@ const AppliedJobsPage = () => {
     <RootLayout>
       <Header />
       <div className="container mx-5 sm:mx-auto py-8 bg-white">
-        
+
         {/* Breadcrumb - Home > Job > My Applied Job */}
         <div className="text-md mb-6 text-gray-500">
-          <Link className="text-primary-color" href="/">Home</Link> &gt; 
-          <Link className="text-primary-color" href="/jobs"> Job</Link> &gt; 
+          <Link className="text-primary-color" href="/">Home</Link> &gt;
+          <Link className="text-primary-color" href="/jobs"> Job</Link> &gt;
           <span className="text-gray-500"> My Applied Job</span>
         </div>
-        
+
         {/* Bộ lọc trạng thái */}
         <div className="mb-4 text-black-color ">
           <label htmlFor="statusFilter" className="font-medium mr-2">Filter by Status:</label>
@@ -134,7 +134,7 @@ const AppliedJobsPage = () => {
 };
 
 // AppliedJobCard Component
-const AppliedJobCard = ({ job, onApply }: { job: AppliedJob; onApply: () => void }) => {     
+const AppliedJobCard = ({ job, onApply }: { job: AppliedJob; onApply: () => void }) => {
   const fileUrl = `http://localhost:5037/${job.cvFile}`;
   const salaryDisplay = job.minSalary === 0 && job.maxSalary === 0
     ? "Negotiable"
@@ -143,13 +143,13 @@ const AppliedJobCard = ({ job, onApply }: { job: AppliedJob; onApply: () => void
   const statusText = job.status === 0
     ? "Applied"
     : job.status === 1
-    ? "Not Suitable"
-    : "Suitable";
+      ? "Not Suitable"
+      : "Suitable";
   const statusColor = job.status === 1
     ? "bg-red-200 text-red-700"
     : job.status === 2
-    ? "bg-green-200 text-green-700"
-    : "bg-yellow-200 text-yellow-700";
+      ? "bg-green-200 text-green-700"
+      : "bg-yellow-200 text-yellow-700";
 
   return (
     <div className="flex sm:flex-row flex-col items-start sm:items-center bg-white p-6 rounded-lg shadow-md transform transition-transform hover:scale-103 hover:shadow-lg sm:w-full w-[90%]">
@@ -183,24 +183,24 @@ const AppliedJobCard = ({ job, onApply }: { job: AppliedJob; onApply: () => void
             <span>{job.applyDate}</span>
           </div>
         </div>
-        <div className="flex items-center space-x-2 text-sm"> 
-        {/* Status */}
-        <div className={`mt-2 px-2 py-1 rounded-md font-semibold ${statusColor} max-w-[150px] text-center truncate`}>
-          <span>{statusText}</span>
-        </div>
+        <div className="flex items-center space-x-2 text-sm">
+          {/* Status */}
+          <div className={`mt-2 px-2 py-1 rounded-md font-semibold ${statusColor} max-w-[150px] text-center truncate`}>
+            <span>{statusText}</span>
+          </div>
           {/* Job Posting Locked tag */}
           {job.jobLocked === 1 && (
-          <div className="mt-2 px-2 py-1 bg-gray-200 text-gray-700 font-semibold rounded-md max-w-[150px] text-center">
-            Job Locked
-          </div>          
-        )}
+            <div className="mt-2 px-2 py-1 bg-gray-200 text-gray-700 font-semibold rounded-md max-w-[150px] text-center">
+              Job Locked
+            </div>
+          )}
 
-        {/* Time remaining Locked tag */}
-        {job.timeRemaining === "Expired" && (
-          <div className="mt-2 px-2 py-1 bg-red-500 text-white-700 font-semibold rounded-md max-w-[150px] text-center">
-            Job Expired
-          </div>          
-        )}
+          {/* Time remaining Locked tag */}
+          {job.timeRemaining === "Expired" && (
+            <div className="mt-2 px-2 py-1 bg-red-500 text-white-700 font-semibold rounded-md max-w-[150px] text-center">
+              Job Expired
+            </div>
+          )}
 
         </div>
       </div>

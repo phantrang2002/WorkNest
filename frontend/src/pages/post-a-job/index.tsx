@@ -8,13 +8,9 @@ import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
- 
-import 'react-quill/dist/quill.snow.css'; 
+import 'react-quill/dist/quill.snow.css';
 import 'dayjs/locale/en-gb';
-
 import dynamic from 'next/dynamic';
- 
-
 const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
 import 'react-quill/dist/quill.snow.css';
 import { CheckCompleteMyEmployerProfile } from '@/api/employerService';
@@ -26,18 +22,15 @@ interface Location {
     province_name: string;
 }
 
-
-// Define the modules for the Quill toolbar
 const modules = {
     toolbar: [
-      [{ header: '1' }, { header: '2' }],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      ['bold', 'italic', 'underline', 'strike'], 
+        [{ header: '1' }, { header: '2' }],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        ['bold', 'italic', 'underline', 'strike'],
     ],
-  };
-  
-  // Formats to allow for styling options in the editor
-  const formats = [
+};
+
+const formats = [
     'header',
     'font',
     'list',
@@ -49,9 +42,9 @@ const modules = {
     'align',
     'link',
     'image',
-  ];
+];
 
-  
+
 const positions = [
     { id: 1, name: 'Intern' },
     { id: 2, name: 'Entry-level' },
@@ -161,13 +154,11 @@ const PostAJobPage = () => {
     const [title, setTitle] = useState<string>('');
     const [position, setPosition] = useState<string>('');
     const [jobIndustry, setjobIndustry] = useState<string>('');
-
     const [description, setDescription] = useState<string>('');
     const [selectedLocation, setSelectedLocation] = useState<number | null>(null);
     const [expirationDate, setExpirationDate] = useState<Dayjs | null>(null);
     const router = useRouter();
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
-    
     const [negotiable, setNegotiable] = useState<boolean>(false);
     const [minSalary, setMinSalary] = useState<number | null>(null);
     const [maxSalary, setMaxSalary] = useState<number | null>(null);
@@ -193,8 +184,6 @@ const PostAJobPage = () => {
     const handleNegotiableChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const isChecked = event.target.checked;
         setNegotiable(isChecked);
-
-        // If checked, clear and disable the salary fields
         if (isChecked) {
             setMinSalary(null);
             setMaxSalary(null);
@@ -213,11 +202,11 @@ const PostAJobPage = () => {
     useEffect(() => {
         const checkProfile = async () => {
             try {
-                const result:any = await CheckCompleteMyEmployerProfile(token);
+                const result: any = await CheckCompleteMyEmployerProfile(token);
                 setIsProfileComplete(result);
             } catch (error) {
                 console.error('Error checking profile:', error);
-            } finally { 
+            } finally {
             }
         };
 
@@ -237,8 +226,6 @@ const PostAJobPage = () => {
         if (!expirationDate) newErrors.expirationTime = 'Expiration date is required';
         if (!quantity) newErrors.quantity = 'Quantity is required';
         if (!experienceExpect) newErrors.experienceExpect = 'Experience Expect is required';
-
-
 
         setErrors(newErrors);
 
@@ -262,9 +249,6 @@ const PostAJobPage = () => {
             console.error('No token found!');
             return;
         }
-
-
-        // Set minSalary and maxSalary to 0 if negotiable is true
         const salaryData = negotiable ? { minSalary: 0, maxSalary: 0 } : { minSalary, maxSalary };
 
 
@@ -293,8 +277,6 @@ const PostAJobPage = () => {
             console.error('Error posting job2:', error);
         }
     };
-
-
     return (
         <RootLayout>
             <Header />
@@ -373,7 +355,7 @@ const PostAJobPage = () => {
                                 value={experienceExpect !== null ? experienceExpect : ''}
                                 type="number"
                                 onChange={(e) => setExperienceExpect(e.target.value ? parseInt(e.target.value, 10) : null)}
-                                error={!!experienceExpect && experienceExpect < 0} // Adjust the validation based on your needs
+                                error={!!experienceExpect && experienceExpect < 0}
                                 helperText={experienceExpect && experienceExpect < 0 ? "Experience must be a positive number" : ""}
                             />
                             <TextField
@@ -384,7 +366,7 @@ const PostAJobPage = () => {
                                 value={quantity !== null ? quantity : ''}
                                 type="number"
                                 onChange={(e) => setQuantity(e.target.value ? parseInt(e.target.value, 10) : null)}
-                                error={!!quantity && quantity < 0} // Adjust the validation based on your needs
+                                error={!!quantity && quantity < 0}
                                 helperText={quantity && quantity < 0 ? "Quantity must be a positive number" : ""}
                             />
                         </div>
@@ -392,36 +374,33 @@ const PostAJobPage = () => {
                         {!negotiable && (
                             <>
                                 <div className="flex space-x-4">
-                            <TextField
-                                label="Min Salary"
-                                variant="outlined"
-                                fullWidth
-                                className="w-1/2"
-                                value={minSalary !== null ? minSalary : ''}
-                                type="number"
-                                onChange={(e) => setMinSalary(e.target.value ? parseInt(e.target.value, 10) : null)}
-                                error={!!minSalary && minSalary < 0} // Adjust the validation based on your needs
-                                helperText={minSalary && minSalary < 0 ? "Min Salary must be a positive number" : ""}
-                                disabled={negotiable} // Disable when negotiable is checked
-                            />
-                            <TextField
-                                label="Max Salary"
-                                variant="outlined"
-                                fullWidth
-                                className="w-1/2"
-                                value={maxSalary !== null ? maxSalary : ''}
-                                type="number"
-                                onChange={(e) => setMaxSalary(e.target.value ? parseInt(e.target.value, 10) : null)}
-                                error={!!maxSalary && maxSalary < 0} // Adjust the validation based on your needs
-                                helperText={maxSalary && maxSalary < 0 ? "Max Salary must be a positive number" : ""}
-                                disabled={negotiable} // Disable when negotiable is checked
-                            />
-                            
-                        </div>
+                                    <TextField
+                                        label="Min Salary"
+                                        variant="outlined"
+                                        fullWidth
+                                        className="w-1/2"
+                                        value={minSalary !== null ? minSalary : ''}
+                                        type="number"
+                                        onChange={(e) => setMinSalary(e.target.value ? parseInt(e.target.value, 10) : null)}
+                                        error={!!minSalary && minSalary < 0}
+                                        helperText={minSalary && minSalary < 0 ? "Min Salary must be a positive number" : ""}
+                                        disabled={negotiable}
+                                    />
+                                    <TextField
+                                        label="Max Salary"
+                                        variant="outlined"
+                                        fullWidth
+                                        className="w-1/2"
+                                        value={maxSalary !== null ? maxSalary : ''}
+                                        type="number"
+                                        onChange={(e) => setMaxSalary(e.target.value ? parseInt(e.target.value, 10) : null)}
+                                        error={!!maxSalary && maxSalary < 0}
+                                        helperText={maxSalary && maxSalary < 0 ? "Max Salary must be a positive number" : ""}
+                                        disabled={negotiable}
+                                    />
+                                </div>
                             </>
                         )}
-
-                        
 
 
                         {/* Negotiable Checkbox */}
@@ -439,7 +418,7 @@ const PostAJobPage = () => {
                         </div>
 
 
-                        <div className="flex space-x-4"> {/* Sử dụng flexbox và khoảng cách giữa các phần tử */}
+                        <div className="flex space-x-4">
                             <TextField
                                 select
                                 label="Location"
@@ -471,14 +450,11 @@ const PostAJobPage = () => {
                             </LocalizationProvider>
                         </div>
 
-
-
                         <MyRichTextEditor
                             description={description}
                             setDescription={setDescription}
                             errors={errors}
-                            
-                            />
+                        />
 
                         <Button
                             type="submit"
@@ -489,7 +465,7 @@ const PostAJobPage = () => {
                                             text-white bg-primary-color hover:bg-white"
                             fullWidth
                             disabled={!isProfileComplete}
-                             
+
                         >
                             Submit Job
                         </Button>
@@ -501,33 +477,31 @@ const PostAJobPage = () => {
     );
 };
 
- 
-
 // MyRichTextEditor component
 type MyRichTextEditorProps = {
     description: string;
     setDescription: React.Dispatch<React.SetStateAction<string>>;
     errors: { description?: string };
-  };
-  
-  const MyRichTextEditor: React.FC<MyRichTextEditorProps> = ({ description, setDescription, errors }) => {
+};
+
+const MyRichTextEditor: React.FC<MyRichTextEditorProps> = ({ description, setDescription, errors }) => {
     return (
-      <div style={{ minHeight: '300px' }}>
-        <ReactQuill
-          value={description}
-          onChange={setDescription}
-          theme="snow"
-          modules={modules}
-          formats={formats}
-          placeholder="Enter job description here..."
-          style={{ minHeight: '300px' }}
-          
-        />
-        
-        {errors.description && (
-          <p style={{ color: 'red', fontSize: '0.8rem' }}>{errors.description}</p>
-        )}
-      </div>
+        <div style={{ minHeight: '300px' }}>
+            <ReactQuill
+                value={description}
+                onChange={setDescription}
+                theme="snow"
+                modules={modules}
+                formats={formats}
+                placeholder="Enter job description here..."
+                style={{ minHeight: '300px' }}
+
+            />
+
+            {errors.description && (
+                <p style={{ color: 'red', fontSize: '0.8rem' }}>{errors.description}</p>
+            )}
+        </div>
     );
-  };
+};
 export default PostAJobPage;

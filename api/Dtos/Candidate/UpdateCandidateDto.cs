@@ -1,22 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace api.Dtos.Candidate
 {
     public class UpdateCandidateDto
     {
-        public string Name { get; set; } // Candidate Name
+        public string Name { get; set; }
 
-        public string PhoneNumber { get; set; } // Candidate Phone
+        public string PhoneNumber { get; set; }
 
-        public string Location { get; set; } // Candidate Location
+        public string Location { get; set; }
 
-        public int? Experience { get; set; } // Years of experience
+        public int? Experience { get; set; }
 
-        public string Industry { get; set; } // Industry sector
+        public string Industry { get; set; }
 
-        public string Description { get; set; } // Short description
+        public string Description { get; set; }
     }
 }

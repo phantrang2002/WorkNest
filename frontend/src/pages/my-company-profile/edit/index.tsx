@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import RootLayout from '@/app/layout';
 import Header from '@/components/Header';
 import { EditMyEmployerProfile, GetMyEmployerProfile, UploadAvatarProfile } from '@/api/employerService';
-import { Alert, Avatar } from '@mui/material';
+import { Avatar } from '@mui/material';
 
 const CompanyProfileEdit: React.FC = () => {
     const [companyProfile, setCompanyProfile] = useState({
@@ -14,7 +14,6 @@ const CompanyProfileEdit: React.FC = () => {
         sizeTo: '',
         description: '',
     });
-    const [selectedAvatar, setSelectedAvatar] = useState<File | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState("");
@@ -98,7 +97,6 @@ const CompanyProfileEdit: React.FC = () => {
         e.preventDefault();
         setLoading(true);
 
-        // Validate that Size From is smaller than Size To
         if (Number(companyProfile.sizeFrom) >= Number(companyProfile.sizeTo)) {
             setError('Size From must be less than Size To');
             setLoading(false);
@@ -119,27 +117,23 @@ const CompanyProfileEdit: React.FC = () => {
                 return;
             }
 
-            // Sending form data to the server
             const response: any = await EditMyEmployerProfile(token, formData);
-            // Check if response status is 200 (OK) and handle success
             console.log(response);
             if (response.message) {
                 setLoading(false);
                 setSuccessMessage("Employer profile updated successfully!");
                 setError("");
             } else {
-                // Handle unexpected status codes or any other errors
                 setError("An unexpected error occurred. Please try again.");
                 setSuccessMessage("");
             }
             setLoading(false);
         } catch (error: any) {
             if (error.response && error.response.data) {
-                // If there are validation errors, display them
                 if (error.response.data.errors) {
                     const errorMessages = Object.values(error.response.data.errors)
                         .flat()
-                        .join(", ");  // Flatten the array of errors and join them into a single string
+                        .join(", ");
                     setError(`Validation errors: ${errorMessages}`);
                     setSuccessMessage("");
                 } else if (error.response.data.error) {
@@ -222,7 +216,7 @@ const CompanyProfileEdit: React.FC = () => {
                                 <select
                                     id="industry"
                                     name="industry"
-                                    value={companyProfile.industry || ''}  // Default to empty string if not set
+                                    value={companyProfile.industry || ''}
                                     onChange={handleInputChange}
                                     className="border border-gray-300 p-2.5 rounded text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 >

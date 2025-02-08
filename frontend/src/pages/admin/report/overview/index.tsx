@@ -4,10 +4,8 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { GetReport } from '@/api/accountService';
 import { useEffect, useState } from 'react';
 
-// Registering necessary components for Bar, Doughnut, and Pie charts
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
-// Type Definitions
 type JobData = {
   total: number;
   available: number;

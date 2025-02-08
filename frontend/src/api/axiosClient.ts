@@ -5,10 +5,10 @@ const instance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000, 
+  timeout: 10000,
 });
 
- 
+
 
 instance.interceptors.request.use(
   (config) => {
@@ -21,7 +21,7 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (response) => {
-    return response.data; 
+    return response.data;
   },
   (error) => {
     return Promise.reject(error);

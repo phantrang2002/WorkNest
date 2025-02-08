@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import RootLayout from '../../app/layout';
-import { Avatar, Button, TextField } from '@mui/material';
+import { Avatar, TextField } from '@mui/material';
 import Header from '@/components/Header';
 import { GetMyEmployerProfile, UploadAvatarProfile } from '@/api/employerService';
 import { MdEdit, MdOutlineGroups2 } from 'react-icons/md';
-import { FaEdit, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaMapMarkerAlt } from 'react-icons/fa';
 import Image from 'next/image';
 import router from 'next/router';
-import { Pagination } from '@mui/material';
 import { IoLocationOutline } from 'react-icons/io5';
 import { MdAccessTime } from 'react-icons/md';
 import dynamic from 'next/dynamic';
 import { FaMap } from "react-icons/fa";
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import { FiCopy } from "react-icons/fi"; // Import icon copy từ react-ic
 import { BiSolidEditAlt } from "react-icons/bi";
-import Loading from '@/components/Loading'; 
+import Loading from '@/components/Loading';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'react-toastify';
 
@@ -50,27 +47,24 @@ interface Job {
   timeRemaining: string;
 }
 
-const CompanyProfile: React.FC = () => { 
+const CompanyProfile: React.FC = () => {
 
   const [employerUrl, setEmployerUrl] = useState<string | string[]>('');
- 
-  // This useEffect ensures that window is only accessed on the client-side
+
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const employerID = localStorage.getItem('userId');
-  
-    const urlToCopy = `http://localhost:3000/employers/${employerID}`;
-        setEmployerUrl(urlToCopy);  // Set the current URL on the client-side
+
+      const urlToCopy = `http://localhost:3000/employers/${employerID}`;
+      setEmployerUrl(urlToCopy);
     }
-  }, []); 
-    
+  }, []);
+
   const handleCopyURL = () => {
-    // Lấy phần URL chứa employerID
     const employerID = localStorage.getItem('userId');
-  
+
     const urlToCopy = `http://localhost:3000/employers/${employerID}`;
-    
-    // Sao chép URL vào clipboard
+
     navigator.clipboard.writeText(urlToCopy)
       .then(() => {
         toast.success("URL copied to clipboard!");
@@ -79,15 +73,15 @@ const CompanyProfile: React.FC = () => {
         toast.error("Failed to copy URL!");
       });
   };
-  
 
-  const [profileData, setProfileData] = useState<Employer | null>(null); 
+
+  const [profileData, setProfileData] = useState<Employer | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [locationCoords, setLocationCoords] = useState<{ lat: number, lng: number } | null>(null);
 
-  const fetchProfile = async () => { 
+  const fetchProfile = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('userToken');
@@ -98,7 +92,6 @@ const CompanyProfile: React.FC = () => {
       const response: any = await GetMyEmployerProfile(token);
       setProfileData(response);
 
-      // Call Geocoding API to get lat, lng from location string
       const location = response.location;
       const geocodeResponse = await fetch(`https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(location)}`);
       const geocodeData = await geocodeResponse.json();
@@ -121,7 +114,7 @@ const CompanyProfile: React.FC = () => {
   }, []);
 
 
-  const handleApply = (jobPostingID: string) => { 
+  const handleApply = (jobPostingID: string) => {
     router.push(`/jobs/${jobPostingID}`);
   };
 
@@ -132,170 +125,170 @@ const CompanyProfile: React.FC = () => {
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-        const token = localStorage.getItem('userToken');
-        if (token) {
-            try {
-                await UploadAvatarProfile(token, file);
-                fetchProfile();
-            } catch (error) {
-                console.error("Error uploading avatar:", error);
-            }
+      const token = localStorage.getItem('userToken');
+      if (token) {
+        try {
+          await UploadAvatarProfile(token, file);
+          fetchProfile();
+        } catch (error) {
+          console.error("Error uploading avatar:", error);
         }
+      }
     }
-}; 
+  };
 
-return (
-  <RootLayout>
-    {loading && (
-      <div className="absolute inset-0 flex items-center justify-center bg-white-color z-50">
-        <Loading /> {/* Hoặc sử dụng một component loading nào đó */}
-      </div>
-    )}
-    <Header />
-  <div className="bg-gray-100 min-h-screen w-full">
-    <div className="relative h-64 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white">
-      <div className="absolute inset-0 bg-cover bg-center opacity-60"></div>
-      <div className="relative z-10 flex flex-col items-center w-full">
-        <div className="relative">
-          <Avatar
-            src={profileData?.avatar || "/path/to/your/default-avatar.png"}
-            sx={{ width: 80, height: 80 }}
-            className="bg-white border border-gray-200"
-          />
-          <button
-            onClick={() => document.getElementById('file-input')?.click()}
-            className="absolute bottom-[-12px] right-[-10px] p-2 bg-white rounded-full border-2 border-gray-200 shadow-md"
-          >
-            <MdEdit className="text-gray-600" />
-          </button>
-          <input
-            id="file-input"
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleAvatarUpload}
-          />
+  return (
+    <RootLayout>
+      {loading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-white-color z-50">
+          <Loading />
         </div>
-        <h1 className="mt-4 text-2xl font-bold">{profileData?.employerName}</h1>
-        <div className="flex items-center mt-2 space-x-6">
-          <div className="flex items-center">
-            <MdOutlineGroups2 className="mr-2" />
-            <span className="text-white-color">
-              Size: {profileData?.size ? `${profileData.size} employees` : '-'}
-            </span>
-          </div>
-        </div>
+      )}
+      <Header />
+      <div className="bg-gray-100 min-h-screen w-full">
+        <div className="relative h-64 bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white">
+          <div className="absolute inset-0 bg-cover bg-center opacity-60"></div>
+          <div className="relative z-10 flex flex-col items-center w-full">
+            <div className="relative">
+              <Avatar
+                src={profileData?.avatar || "/path/to/your/default-avatar.png"}
+                sx={{ width: 80, height: 80 }}
+                className="bg-white border border-gray-200"
+              />
+              <button
+                onClick={() => document.getElementById('file-input')?.click()}
+                className="absolute bottom-[-12px] right-[-10px] p-2 bg-white rounded-full border-2 border-gray-200 shadow-md"
+              >
+                <MdEdit className="text-gray-600" />
+              </button>
+              <input
+                id="file-input"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+              />
+            </div>
+            <h1 className="mt-4 text-2xl font-bold">{profileData?.employerName}</h1>
+            <div className="flex items-center mt-2 space-x-6">
+              <div className="flex items-center">
+                <MdOutlineGroups2 className="mr-2" />
+                <span className="text-white-color">
+                  Size: {profileData?.size ? `${profileData.size} employees` : '-'}
+                </span>
+              </div>
+            </div>
 
-        <button onClick={() => router.push('/my-company-profile/edit')} 
-                className="flex items-center gap-2 rounded-md px-5 mt-2 py-2 
+            <button onClick={() => router.push('/my-company-profile/edit')}
+              className="flex items-center gap-2 rounded-md px-5 mt-2 py-2 
                            text-white-color bg-darker-color
                           hover:bg-yellow-color "
-                ><BiSolidEditAlt />Edit my profile</button>
-      </div>
-    </div>
-
-    {/* Main Content Section */}
-    <div className="container mx-auto py-8 px-4 grid grid-cols-10 gap-8 w-full">
-      {/* Left Section - Location and Description */}
-      <div className="col-span-10 sm:col-span-4 space-y-8 w-full"> {/* Make col-span-10 to ensure it takes up 100% width */}
-        {/* Description */}
-        <div className="bg-white p-6 rounded-lg shadow-md h-fit">
-          <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
-            <h2 className="text-lg font-semibold text-white-color ml-4">Description</h2>
-          </div>
-          <div>
-            <p className="mt-4 text-gray-700">{profileData?.description}</p>
+            ><BiSolidEditAlt />Edit my profile</button>
           </div>
         </div>
 
-        {/* Location */}
-        <div className="bg-white p-6 rounded-lg shadow-md h-fit">
-          <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
-            <h2 className="text-lg font-semibold text-white-color ml-4">Location</h2>
-          </div>
-
-          <div className="flex items-center mt-4">
-            <FaMapMarkerAlt className="mr-2 text-darker-color" />
-            <span className="text-gray-700">Address: {profileData?.location}</span>
-          </div>
-
-          <div className="flex items-center mt-2 mb-4">
-            <FaMap className="mr-2 text-darker-color" />
-            <span className="text-gray-700">Map: </span>
-          </div>
-
-          {/* Map */}
-          {locationCoords && (
-            <div style={{ height: '300px', width: '100%' }}>
-              <MapContainer
-                center={[locationCoords.lat, locationCoords.lng]} 
-                zoom={50}
-                style={{ height: '100%', width: '100%' }}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                />
-                <Marker position={[locationCoords.lat, locationCoords.lng]}>
-                  <Popup>
-                    {profileData?.location}
-                  </Popup>
-                </Marker>
-              </MapContainer>
+        {/* Main Content Section */}
+        <div className="container mx-auto py-8 px-4 grid grid-cols-10 gap-8 w-full">
+          {/* Left Section - Location and Description */}
+          <div className="col-span-10 sm:col-span-4 space-y-8 w-full">
+            {/* Description */}
+            <div className="bg-white p-6 rounded-lg shadow-md h-fit">
+              <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
+                <h2 className="text-lg font-semibold text-white-color ml-4">Description</h2>
+              </div>
+              <div>
+                <p className="mt-4 text-gray-700">{profileData?.description}</p>
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Share */}
-        <div className="bg-white p-6 rounded-lg shadow-md h-fit">
-          <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
-            <h2 className="text-lg font-semibold text-white-color ml-4">Sharing</h2>
+            {/* Location */}
+            <div className="bg-white p-6 rounded-lg shadow-md h-fit">
+              <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
+                <h2 className="text-lg font-semibold text-white-color ml-4">Location</h2>
+              </div>
+
+              <div className="flex items-center mt-4">
+                <FaMapMarkerAlt className="mr-2 text-darker-color" />
+                <span className="text-gray-700">Address: {profileData?.location}</span>
+              </div>
+
+              <div className="flex items-center mt-2 mb-4">
+                <FaMap className="mr-2 text-darker-color" />
+                <span className="text-gray-700">Map: </span>
+              </div>
+
+              {/* Map */}
+              {locationCoords && (
+                <div style={{ height: '300px', width: '100%' }}>
+                  <MapContainer
+                    center={[locationCoords.lat, locationCoords.lng]}
+                    zoom={50}
+                    style={{ height: '100%', width: '100%' }}
+                  >
+                    <TileLayer
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    />
+                    <Marker position={[locationCoords.lat, locationCoords.lng]}>
+                      <Popup>
+                        {profileData?.location}
+                      </Popup>
+                    </Marker>
+                  </MapContainer>
+                </div>
+              )}
+            </div>
+
+            {/* Share */}
+            <div className="bg-white p-6 rounded-lg shadow-md h-fit">
+              <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
+                <h2 className="text-lg font-semibold text-white-color ml-4">Sharing</h2>
+              </div>
+              <div className="flex justify-center mt-8">
+                <QRCodeSVG value={employerUrl} size={128} />
+              </div>
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={handleCopyURL}
+                  className="text-white bg-primary-color px-4 py-2 rounded-md mt-4 hover:bg-primary-color-dark transition duration-200 ease-in-out"
+                >
+                  Copy URL
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="flex justify-center mt-8">
-            <QRCodeSVG value={employerUrl} size={128} />
-          </div>
-          <div className="mt-4 flex justify-center">
-            <button
-              onClick={handleCopyURL}
-              className="text-white bg-primary-color px-4 py-2 rounded-md mt-4 hover:bg-primary-color-dark transition duration-200 ease-in-out"
-            >
-              Copy URL
-            </button>
+
+          {/* Right Section - Hiring */}
+          <div className="col-span-10 sm:col-span-6 bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
+              <h2 className="text-lg font-semibold text-white-color ml-4">Hiring</h2>
+            </div>
+
+            <div className="mt-4">
+              <TextField
+                label="Search for jobs"
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="mb-4"
+              />
+            </div>
+
+            <div className="mt-4 space-y-4">
+              {profileData?.jobPostings
+                ?.filter((job: Job) =>
+                  job.title.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((job: Job) => (
+                  <JobCard key={job.jobPostingID} job={job} onApply={() => handleApply(job.jobPostingID)} />
+                ))}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Right Section - Hiring */}
-      <div className="col-span-10 sm:col-span-6 bg-white p-6 rounded-lg shadow-md">
-        <div className="bg-darker-color p-2 rounded-t-lg -mx-6 -mt-8">
-          <h2 className="text-lg font-semibold text-white-color ml-4">Hiring</h2>
-        </div>
-
-        <div className="mt-4">
-          <TextField
-            label="Search for jobs"
-            variant="outlined"
-            fullWidth
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="mb-4"
-          />
-        </div>
-
-        <div className="mt-4 space-y-4">
-          {profileData?.jobPostings
-            ?.filter((job: Job) =>
-              job.title.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map((job: Job) => (
-              <JobCard key={job.jobPostingID} job={job} onApply={() => handleApply(job.jobPostingID)} />
-            ))}
-        </div>
-      </div>
-    </div>
-  </div>
-</RootLayout>
-);
+    </RootLayout>
+  );
 
 };
 const JobCard = ({ job, onApply }: { job: Job; onApply: () => void }) => {

@@ -17,7 +17,7 @@ interface PostedJob {
   timeRemaining: string;
   createdOn: string;
   lockFlg: number;
-} 
+}
 
 const PendingJobPage = () => {
   const [postedJobs, setPostedJobs] = useState<PostedJob[]>([]);
@@ -32,32 +32,32 @@ const PendingJobPage = () => {
     if (token) {
       setUserToken(token);
     }
-  }, []); 
+  }, []);
 
   useEffect(() => {
     const fetchPostedJob = async () => {
-      if (!userToken) return; // Ensure there's a token before making the request
+      if (!userToken) return;
       try {
         const response: any = await GetMyPendingJob(pageNumber, pageSize, userToken);
-        setPostedJobs(response.jobPostings); // Store job postings in state
-        setTotalPages(Math.ceil(response.totalCount / pageSize)); // Set total pages for pagination
+        setPostedJobs(response.jobPostings);
+        setTotalPages(Math.ceil(response.totalCount / pageSize));
       } catch (error) {
         console.error('Error fetching posted jobs:', error);
       }
     };
-  
+
     fetchPostedJob();
   }, [pageNumber, pageSize, userToken]);
-  
+
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setPageNumber(value); 
+    setPageNumber(value);
   };
 
-  const handleApply = (jobPostingID: string) => { 
+  const handleApply = (jobPostingID: string) => {
     router.push(`/jobs/${jobPostingID}`);
   };
-   
+
 
   return (
     <RootLayout>
@@ -65,26 +65,26 @@ const PendingJobPage = () => {
       <div className="container mx-auto py-8 bg-white">
         {/* Breadcrumb - Home > Job > My Pending Job */}
         <div className="text-md mb-6 text-gray-500 sm:mx-0 mx-5">
-          <Link className="text-primary-color" href="/">Home</Link> &gt; 
-          <Link className="text-primary-color" href="/jobs"> Job</Link> &gt; 
+          <Link className="text-primary-color" href="/">Home</Link> &gt;
+          <Link className="text-primary-color" href="/jobs"> Job</Link> &gt;
           <span className="text-gray-500"> My Pending Job</span>
-        </div>     
-  
+        </div>
+
         {/* Grid with 2 columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 sm:mx-0 mx-5">
           {postedJobs.length > 0 ? (
             postedJobs.map((job) => (
-              <PostedJobCard 
-                key={job.jobPostingID} 
-                job={job} 
-                onApply={() => handleApply(job.jobPostingID)}  
+              <PostedJobCard
+                key={job.jobPostingID}
+                job={job}
+                onApply={() => handleApply(job.jobPostingID)}
               />
             ))
           ) : (
             <p className="text-center text-gray-600 col-span-2">No jobs posted yet.</p>
           )}
         </div>
-  
+
         {/* Pagination Controls */}
         <div className="flex justify-center mt-10 mb-5">
           <Pagination
@@ -92,16 +92,16 @@ const PendingJobPage = () => {
             page={pageNumber}
             onChange={handlePageChange}
             variant="outlined"
-            shape="rounded" 
+            shape="rounded"
           />
         </div>
       </div>
     </RootLayout>
   );
-  
+
 };
 
-const PostedJobCard = ({ job, onApply }: { job: PostedJob; onApply: () => void }) => {   
+const PostedJobCard = ({ job, onApply }: { job: PostedJob; onApply: () => void }) => {
   const formattedCreateDate = new Date(job.createdOn).toLocaleString('en-US', {
     year: 'numeric',
     month: '2-digit',
@@ -109,16 +109,16 @@ const PostedJobCard = ({ job, onApply }: { job: PostedJob; onApply: () => void }
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-    hour12: false, // Sử dụng định dạng 24 giờ
-  }).replace(',', ''); // Loại bỏ dấu phẩy giữa ngày và giờ
-  
+    hour12: false,
+  }).replace(',', '');
+
   return (
     <div className="flex flex-col sm:flex-row items-start sm:items-center bg-white p-6 rounded-lg shadow-md transform transition-transform hover:scale-103 hover:shadow-lg">
       {/* Employer Avatar */}
       <div className="w-16 h-16 flex-shrink-0 mb-4 sm:mb-0">
         {job.companyLogo ? (
           <Image
-            src={job.companyLogo || 'D:/WorkNest/frontend/src/app/assets/images/default-avatar.jpg'} 
+            src={job.companyLogo || 'D:/WorkNest/frontend/src/app/assets/images/default-avatar.jpg'}
             alt="Company Logo"
             width={64}
             height={64}
@@ -170,10 +170,10 @@ const PostedJobCard = ({ job, onApply }: { job: PostedJob; onApply: () => void }
       </div>
 
       {/* Apply Button */}
-      <div className="flex flex-row sm:gap-0 gap-2 sm:flex-col items-end justify-center mt-4 sm:mt-0 sm:ml-4 sm:w-fit w-full"> 
+      <div className="flex flex-row sm:gap-0 gap-2 sm:flex-col items-end justify-center mt-4 sm:mt-0 sm:ml-4 sm:w-fit w-full">
         {/* Button to View Job Details */}
-        <button 
-          onClick={onApply} 
+        <button
+          onClick={onApply}
           className="w-full sm:w-fit bg-brighter-color text-white px-4 py-2 rounded-md mt-2 hover:bg-primary-color">
           View details
         </button>

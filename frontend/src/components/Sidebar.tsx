@@ -9,27 +9,23 @@ const Sidebar = () => {
   const [isCVTemplatesOpen, setIsCVTemplatesOpen] = useState(false);
   const [isEmployerManagementOpen, setIsEmployerManagementOpen] = useState(false);
   const [isCandidateManagementOpen, setIsCandidateManagementOpen] = useState(false);
-  const [isPolicyManagementOpen, setIsPolicyManagementOpen] = useState(false); 
-  const [isFeedbackManagementOpen, setIsFeedbackManagementOpen] = useState(false);  
-  const [isStatisticManagementOpen, setIsStatisticManagementOpen] = useState(false);  
+  const [isPolicyManagementOpen, setIsPolicyManagementOpen] = useState(false);
+  const [isFeedbackManagementOpen, setIsFeedbackManagementOpen] = useState(false);
+  const [isStatisticManagementOpen, setIsStatisticManagementOpen] = useState(false);
   const [token, setToken] = useState<string | null>(null);
-    
 
+  useEffect(() => {
+    const storedToken = localStorage.getItem('userToken');
+    setToken(storedToken);
+  }, []);
 
-    useEffect(() => {
-        const storedToken = localStorage.getItem('userToken');
-        setToken(storedToken);
-    }, []);
-
-    useEffect(() => {
-        const storedRole = localStorage.getItem('userRole');
-        if (storedRole !== 'Admin') {
-            alert('You do not have permission to access this page.');
-            router.push('/home');
-        }
-    }, [router]);
-
-  
+  useEffect(() => {
+    const storedRole = localStorage.getItem('userRole');
+    if (storedRole !== 'Admin') {
+      alert('You do not have permission to access this page.');
+      router.push('/home');
+    }
+  }, [router]);
 
   const toggleRecruitmentMenu = () => {
     setIsRecruitmentOpen(prevState => !prevState);
@@ -48,21 +44,17 @@ const Sidebar = () => {
   };
 
   const togglePolicyManagementMenu = () => {
-    setIsPolicyManagementOpen(prevState => !prevState);  
+    setIsPolicyManagementOpen(prevState => !prevState);
   };
 
   const toggleFeedbackManagementMenu = () => {
-    setIsFeedbackManagementOpen(prevState => !prevState);  
+    setIsFeedbackManagementOpen(prevState => !prevState);
   };
 
   const toggleStatisticManagementMenu = () => {
-    setIsStatisticManagementOpen(prevState => !prevState); 
-  };  
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(prevState => !prevState);
+    setIsStatisticManagementOpen(prevState => !prevState);
   };
-  
+
   const handleLogout = () => {
     localStorage.removeItem('userToken');
     localStorage.removeItem('userRole');
@@ -72,7 +64,7 @@ const Sidebar = () => {
   return (
     <div className={styles.sidebar}>
       <h2>Admin Dashboard</h2>
-      <ul className={styles.menu}> 
+      <ul className={styles.menu}>
         <li>
           <div onClick={toggleStatisticManagementMenu} className={`${styles.menuItem} ${isStatisticManagementOpen ? styles.active : ''}`}>
             <span>Statistics Report</span>
@@ -150,7 +142,7 @@ const Sidebar = () => {
             </li>
           </ul>
         </li>
-        
+
         {/* Policy Management */}
         <li>
           <div onClick={togglePolicyManagementMenu} className={`${styles.menuItem} ${isPolicyManagementOpen ? styles.active : ''}`}>

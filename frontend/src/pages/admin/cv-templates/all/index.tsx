@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
 import { useRouter } from 'next/router';
-import { DeleteASampleCV, GetAllSampleCV, UpdateSampleCV } from '@/api/sampleCVService'; // Added UpdateSampleCV
-import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination, Modal, Box, TextField, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { DeleteASampleCV, GetAllSampleCV, UpdateSampleCV } from '@/api/sampleCVService';
+import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination, TextField, Button, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,20 +13,20 @@ interface CV {
     fileCV: string;
 }
 
-const AllCVPage = () => { 
-    const [pageNumber, setPageNumber] = useState(1); // State for current page
-    const [pageSize] = useState(3); // Number of CVs per page
-    const [totalPages, setTotalPages] = useState(0); // Total number of pages
+const AllCVPage = () => {
+    const [pageNumber, setPageNumber] = useState(1);
+    const [pageSize] = useState(3);
+    const [totalPages, setTotalPages] = useState(0);
     const router = useRouter();
     const [userToken, setUserToken] = useState<string | null>(null);
-    const [editModalOpen, setEditModalOpen] = useState(false); // State to control the modal visibility
-    const [currentCV, setCurrentCV] = useState<CV | null>(null); // State to store the CV being edited
-    const [updatedTitle, setUpdatedTitle] = useState(""); // Form data for title
-    const [updatedDescription, setUpdatedDescription] = useState(""); // Form data for description
+    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [currentCV, setCurrentCV] = useState<CV | null>(null);
+    const [updatedTitle, setUpdatedTitle] = useState("");
+    const [updatedDescription, setUpdatedDescription] = useState("");
 
     const [cv, setCV] = useState<CV[]>([]);
-    const [open, setOpen] = useState(false); // Modal open/close state
- 
+    const [open, setOpen] = useState(false);
+
 
     useEffect(() => {
         const token = localStorage.getItem('userToken');
@@ -60,7 +60,6 @@ const AllCVPage = () => {
                 return;
             }
 
-            // Call API to delete CV
             const response: any = await DeleteASampleCV(sampleID, userToken);
             toast.success("CV deleted successfully.");
             fetchCV();
@@ -70,33 +69,30 @@ const AllCVPage = () => {
         }
     };
 
-    // Open the modal and set the current CV data to be updated
     const handleEdit = (cvItem: CV) => {
         setCurrentCV(cvItem);
         setUpdatedTitle(cvItem.title);
         setUpdatedDescription(cvItem.description);
-        setOpen(true); // Open the modal
+        setOpen(true);
     };
 
 
- // Handle updating the CV
- const handleUpdate = async () => {
-    if (currentCV) {
-        try {
-            // Call the update API
-            const data = { title: updatedTitle, description: updatedDescription };
-            await UpdateSampleCV(currentCV.sampleID, data, userToken);
-            toast.success('CV updated successfully!');
-            fetchCV(); // Refresh the list after update
-            setOpen(false); // Close the modal
-        } catch (error) {
-            console.error('Error updating CV:', error);
-            toast.error('Failed to update CV.');
+    const handleUpdate = async () => {
+        if (currentCV) {
+            try {
+                const data = { title: updatedTitle, description: updatedDescription };
+                await UpdateSampleCV(currentCV.sampleID, data, userToken);
+                toast.success('CV updated successfully!');
+                fetchCV();
+                setOpen(false);
+            } catch (error) {
+                console.error('Error updating CV:', error);
+                toast.error('Failed to update CV.');
+            }
         }
-    }
-};
+    };
 
-    
+
 
     return (
         <AdminLayout>
@@ -200,8 +196,8 @@ const AllCVPage = () => {
                 />
             </div>
 
-           {/* Modal for updating CV */}
-           <Dialog open={open} onClose={() => setOpen(false)}>
+            {/* Modal for updating CV */}
+            <Dialog open={open} onClose={() => setOpen(false)}>
                 <DialogTitle>Update CV</DialogTitle>
                 <DialogContent>
                     <TextField
@@ -218,7 +214,7 @@ const AllCVPage = () => {
                         onChange={(e) => setUpdatedDescription(e.target.value)}
                         margin="normal"
                         multiline
-                        rows={4} // Set the number of visible rows
+                        rows={4}
                     />
                 </DialogContent>
                 <DialogActions>

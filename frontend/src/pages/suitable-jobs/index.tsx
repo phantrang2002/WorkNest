@@ -4,7 +4,7 @@ import RootLayout from '../../app/layout';
 import { GetSuitableJobs } from '@/api/jobService';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { Pagination, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Pagination } from '@mui/material';
 import { IoLocationOutline } from 'react-icons/io5';
 import { MdAccessTime } from 'react-icons/md';
 
@@ -17,24 +17,24 @@ interface Job {
   location: string;
   timeRemaining: string;
   jobIndustry: string;
-} 
+}
 
 const SuitablesJobPage = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]); 
+  const [filteredJobs, setFilteredJobs] = useState<Job[]>([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize] = useState(8);
   const [totalPages, setTotalPages] = useState(0);
   const router = useRouter();
-  const [userToken, setUserToken] = useState<string | null>(null); 
+  const [userToken, setUserToken] = useState<string | null>(null);
 
 
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
-        setUserToken(token); 
-    } 
-}, []);
+      setUserToken(token);
+    }
+  }, []);
 
 
 
@@ -52,58 +52,58 @@ const SuitablesJobPage = () => {
 
     fetchJobs();
   }, [pageNumber, pageSize]);
- 
+
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPageNumber(value);
   };
 
   const handleApply = (jobPostingID: string) => {
     router.push(`/jobs/${jobPostingID}`);
-  }; 
+  };
 
   return (
     <RootLayout>
       <Header />
-      <div className="container mx-auto py-8 bg-white min-h-[800px]">        
+      <div className="container mx-auto py-8 bg-white min-h-[800px]">
 
-       {/* Job List */} 
-  {filteredJobs.length > 0 ? (
-    <>
-     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-      {filteredJobs.map((job) => (
-        <JobCard
-          key={job.jobPostingID}
-          job={job}
-          onApply={() => handleApply(job.jobPostingID)}
-        />
-      ))}
-      {/* Pagination */}
-      <div className="flex justify-center mt-10 mb-5 col-span-full">
-        <Pagination
-          count={totalPages}
-          page={pageNumber}
-          onChange={handlePageChange}
-          variant="outlined"
-          shape="rounded"
-        />
-      </div>
-      </div>
-    </>
-  ) : (
-    <div className="flex items-center justify-center min-h-[800px] text-gray-500">
-      <div className="text-center">
-        <h2 className="text-lg font-semibold">No jobs found</h2>
-        <p>Try adjusting your profile to find more opportunities.</p>
-        <button className="mt-4 px-4 py-2 bg-primary-color text-white rounded-md hover:bg-gray-600 ml-2 transition"  
-                  onClick={() => router.push(`/my-profile`)}>Check Your Profile</button>
-      </div>
-      
-    </div>
-  )}
- 
+        {/* Job List */}
+        {filteredJobs.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+              {filteredJobs.map((job) => (
+                <JobCard
+                  key={job.jobPostingID}
+                  job={job}
+                  onApply={() => handleApply(job.jobPostingID)}
+                />
+              ))}
+              {/* Pagination */}
+              <div className="flex justify-center mt-10 mb-5 col-span-full">
+                <Pagination
+                  count={totalPages}
+                  page={pageNumber}
+                  onChange={handlePageChange}
+                  variant="outlined"
+                  shape="rounded"
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center justify-center min-h-[800px] text-gray-500">
+            <div className="text-center">
+              <h2 className="text-lg font-semibold">No jobs found</h2>
+              <p>Try adjusting your profile to find more opportunities.</p>
+              <button className="mt-4 px-4 py-2 bg-primary-color text-white rounded-md hover:bg-gray-600 ml-2 transition"
+                onClick={() => router.push(`/my-profile`)}>Check Your Profile</button>
+            </div>
+
+          </div>
+        )}
 
 
-        
+
+
       </div>
     </RootLayout>
   );

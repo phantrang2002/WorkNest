@@ -1,6 +1,4 @@
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Candidate;
 using api.Models;

@@ -39,15 +39,15 @@ const ExpiredJobPage = () => {
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPageNumber(value);
-};
+  };
 
-const handleViewDetail = (jobPostingID: string) => { 
-  router.push(`/jobs/${jobPostingID}`);
-};
+  const handleViewDetail = (jobPostingID: string) => {
+    router.push(`/jobs/${jobPostingID}`);
+  };
 
   return (
     <AdminLayout>
-            <h1 className="text-3xl font-semibold mb-6 text-black-color">Recruitment Management</h1>
+      <h1 className="text-3xl font-semibold mb-6 text-black-color">Recruitment Management</h1>
 
 
       {/* Job Title Input and Buttons */}
@@ -62,7 +62,7 @@ const handleViewDetail = (jobPostingID: string) => {
       </div>
 
       {/* Filter & Sorting Options */}
-      <div className="mb-4 flex items-center gap-6 text-gray-700"> 
+      <div className="mb-4 flex items-center gap-6 text-gray-700">
         <div className="flex items-center">
           <label htmlFor="sortCriteria" className="font-medium mr-2">Sort by:</label>
           <select
@@ -86,8 +86,8 @@ const handleViewDetail = (jobPostingID: string) => {
               <TableCell sx={{ fontWeight: 600 }}>Level</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Company</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Company Avatar</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Time Remaining</TableCell> 
-              <TableCell sx={{ fontWeight: 600 }}>Created On</TableCell> 
+              <TableCell sx={{ fontWeight: 600 }}>Time Remaining</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Created On</TableCell>
 
               <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
             </TableRow>
@@ -108,17 +108,17 @@ const handleViewDetail = (jobPostingID: string) => {
                 </TableCell>
                 <TableCell>{job.timeRemaining}</TableCell> {/* Display Time Remaining */}
                 <TableCell>
-                                                {new Date(job.createdOn).toLocaleString('en-CA', {
-                                                    year: 'numeric',
-                                                    month: '2-digit',
-                                                    day: '2-digit',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                    second: '2-digit',
-                                                    hour12: false
-                                                }).replace(',', '')}
-                                            </TableCell>
-                <TableCell> 
+                  {new Date(job.createdOn).toLocaleString('en-CA', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                  }).replace(',', '')}
+                </TableCell>
+                <TableCell>
                   <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 ml-2 transition"
                     onClick={() => handleViewDetail(job.jobPostingID)}>View Details</button>
                 </TableCell>
@@ -128,14 +128,14 @@ const handleViewDetail = (jobPostingID: string) => {
         </Table>
       </TableContainer>
       <div className="flex justify-center mt-10 mb-5">
-                    <Pagination
-                        count={totalPages}
-                        page={pageNumber}
-                        onChange={handlePageChange}
-                        variant="outlined"
-                        shape="rounded"
-                    />
-                </div>               
+        <Pagination
+          count={totalPages}
+          page={pageNumber}
+          onChange={handlePageChange}
+          variant="outlined"
+          shape="rounded"
+        />
+      </div>
 
     </AdminLayout>
   );

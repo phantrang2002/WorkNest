@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
 import { useRouter } from 'next/router';
-import { DeleteAJob, GetAllJobs } from '@/api/jobService';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination, Modal, Box, TextField, Button } from '@mui/material';
-import { DeleteASampleCV, GetAllSampleCV } from '@/api/sampleCVService';
-import { DeleteAPolicy, GetAllPolicy } from '@/api/policyService';
-import { GetResolvedContact, GetUnResolvedContact } from '@/api/contactService';
-import { resolveContact } from '@/api/contactService';  // Assuming resolveContact is exported from here
+import { GetUnResolvedContact } from '@/api/contactService';
+import { resolveContact } from '@/api/contactService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 interface Contact {
@@ -54,7 +51,7 @@ const UnResolvedContactPage = () => {
 
     const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
         setPageNumber(value);
-    }; 
+    };
 
     const handleResolve = (contactID: string) => {
         const contactToResolve = contact.find(c => c.contactID === contactID);
@@ -77,8 +74,8 @@ const UnResolvedContactPage = () => {
             const response = await resolveContact(selectedContact.contactID, title, description, userToken);
             if (response.status === 200) {
                 toast.success('Contact resolved successfully');
-                fetchPolicy();  // Refresh the contact list after resolving
-                handleCloseModal();  // Close the modal
+                fetchPolicy();
+                handleCloseModal();
             }
         } catch (error) {
             console.error('Error resolving contact:', error);
@@ -107,10 +104,10 @@ const UnResolvedContactPage = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '5%' }}>No.</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Name</TableCell> 
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Email</TableCell> 
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Title</TableCell>  
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Action</TableCell> 
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Name</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Email</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Title</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '20%' }}>Action</TableCell>
                             <TableCell
                                 sx={{
                                     fontWeight: 'bold',
@@ -123,7 +120,7 @@ const UnResolvedContactPage = () => {
                                 }}
                             >
                                 Description
-                            </TableCell> 
+                            </TableCell>
                         </TableRow>
                     </TableHead>
 
@@ -157,16 +154,16 @@ const UnResolvedContactPage = () => {
                                         {contactItem.problemTitle}
                                     </TableCell>
 
-                                     {/* Description */}
-                                     <TableCell
+                                    {/* Description */}
+                                    <TableCell
                                         align="left"
                                         className="text-gray-600 max-w-[200px]"
                                     >
                                         {contactItem.description}
                                     </TableCell>
-                                    
-                                     {/* Actions */}
-                                     <TableCell align="left">
+
+                                    {/* Actions */}
+                                    <TableCell align="left">
                                         <button
                                             onClick={() => handleResolve(contactItem.contactID)}
                                             className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-700 transition"
@@ -202,25 +199,25 @@ const UnResolvedContactPage = () => {
                 <Box className="w-96 p-6 bg-white shadow-lg rounded-lg mx-auto mt-20">
                     <h2 className="text-xl font-semibold mb-4 text-black-color">Resolve Feedback</h2>
                     <TextField
-    fullWidth
-    label="Title"
-    variant="outlined"
-    value={title}
-    onChange={(e) => setTitle(e.target.value)}
-    className="mb-4"
-/>
+                        fullWidth
+                        label="Title"
+                        variant="outlined"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="mb-4"
+                    />
 
-<TextField
-    fullWidth
-    label="Description"
-    variant="outlined"
-    value={description}
-    onChange={(e) => setDescription(e.target.value)}
-    className="mb-4"
-    multiline // Make it a textarea
-    minRows={5} // Set the minimum height
-    maxRows={10} // Optional: Max rows to prevent growing too large
-/>
+                    <TextField
+                        fullWidth
+                        label="Description"
+                        variant="outlined"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="mb-4"
+                        multiline
+                        minRows={5}
+                        maxRows={10}
+                    />
                     <div className="flex justify-end gap-4">
                         <Button onClick={handleCloseModal} variant="outlined">Cancel</Button>
                         <Button onClick={handleSubmitResolve} variant="contained" color="primary">Resolve</Button>

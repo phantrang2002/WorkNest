@@ -1,4 +1,3 @@
-// /pages/thank-you.tsx
 import React from 'react';
 import RootLayout from '../../app/layout';
 import Header from '@/components/Header';

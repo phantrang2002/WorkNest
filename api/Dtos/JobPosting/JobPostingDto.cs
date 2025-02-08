@@ -1,27 +1,23 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace api.Dtos.JobPosting
 {
     public class JobPostingDto
     {
         [Required]
-        public string Title { get; set; } = string.Empty; // Job Title
+        public string Title { get; set; } = string.Empty;
 
         [Required]
-        public string Position { get; set; } = string.Empty; // Job Position
+        public string Position { get; set; } = string.Empty;
 
         [Required]
-        public string Description { get; set; } = string.Empty; // Job Description
+        public string Description { get; set; } = string.Empty;
 
         [Required]
-        public string Location { get; set; } = string.Empty; // Job Location
+        public string Location { get; set; } = string.Empty;
 
         [Required]
-        public DateTime Time { get; set; } // Expiry Date for the Job Posting
+        public DateTime Time { get; set; }
         public int MinSalary { get; set; }
         public int MaxSalary { get; set; }
 

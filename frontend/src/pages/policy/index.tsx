@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 interface Policy {
   policyID: string;
   title: string;
-  description: string; 
+  description: string;
 }
 
 const PolicyPage = () => {
@@ -17,15 +17,15 @@ const PolicyPage = () => {
     const fetchPolicy = async () => {
       try {
         const response: any = await GetPolicy();
-        setPolicies(response.policies);  
-        setMostRecentlyUpdatedDate(response.mostRecentlyUpdatedPolicy); // Set the date
+        setPolicies(response.policies);
+        setMostRecentlyUpdatedDate(response.mostRecentlyUpdatedPolicy);
       } catch (error) {
         console.error('Error fetching policies:', error);
       }
     };
 
     fetchPolicy();
-  }, []); // Add empty dependency array to avoid infinite loops
+  }, []);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

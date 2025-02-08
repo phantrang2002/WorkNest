@@ -1,6 +1,4 @@
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using api.Data;
 using api.Dtos.Employer;
 using api.Models;
@@ -87,7 +85,7 @@ namespace api.Controllers
                 Size = employer.Size,
                 Description = employer.Description,
                 JobPostings = employer.JobPostings
-                  .Where(j => j.Time > DateTime.Now) // Include only unexpired job postings
+                  .Where(j => j.Time > DateTime.Now)
                   .Where(j => j.Status == true)
                   .Where(j => j.LockFlg == 0)
 
@@ -109,26 +107,21 @@ namespace api.Controllers
         [HttpGet("profile/complete-info")]
         public async Task<ActionResult<bool>> IsProfileComplete()
         {
-            // Lấy EmployerID từ JWT token (Claim)
             var employerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Tìm employer theo ID
             var employer = await _context.Employers
                 .FirstOrDefaultAsync(e => e.EmployerID == employerId);
 
-            // Nếu không tìm thấy employer, trả về lỗi 404
             if (employer == null)
             {
                 return NotFound(new { error = "Employer profile not found" });
             }
 
-            // Kiểm tra các trường thông tin cần thiết
             bool isComplete = !string.IsNullOrEmpty(employer.Industry) &&
                             !string.IsNullOrEmpty(employer.Location) &&
                             !string.IsNullOrEmpty(employer.Size) &&
                             !string.IsNullOrEmpty(employer.Description);
 
-            // Trả về kết quả true/false
             return Ok(isComplete);
         }
 
@@ -206,84 +199,81 @@ namespace api.Controllers
         }
 
         [HttpGet("job")]
-public async Task<ActionResult<GetMyJobPosting>> GetJobPostingsByEmployer(int pageNumber = 1, int pageSize = 10)
-{
-    var employerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-    if (string.IsNullOrEmpty(employerId))
-    {
-        return Unauthorized(new { error = "Employer ID not found in claims" });
-    }
-
-    var employer = await _context.Employers
-        .Include(e => e.JobPostings)  // Include JobPostings related to the employer
-        .FirstOrDefaultAsync(e => e.EmployerID == employerId);
-
-    if (employer == null)
-    {
-        return NotFound(new { error = "Employer not found" });
-    }
-
-    var totalJobPostings = employer.JobPostings.Count(job => job.Status == true);
-
-    // Get the paginated job postings
-    var jobPostings = employer.JobPostings
-        .Where(jp => jp.Status == true)
-        .OrderByDescending(jp => jp.Time)
-        .Skip((pageNumber - 1) * pageSize)
-        .Take(pageSize);
-
-    var jobSummaryDtos = new List<GetMyJobPosting>();
-
-    foreach (var jobPosting in jobPostings)
-    {
-        // Tính toán các thống kê ứng viên
-        var totalApplications = await _context.ApplyForms
-            .Where(af => af.JobPostingID == jobPosting.JobPostingID)
-            .CountAsync();
-
-        var notReviewedCount = await _context.ApplyForms
-            .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 0)
-            .CountAsync();
-
-        var notSuitableCount = await _context.ApplyForms
-            .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 1)
-            .CountAsync();
-
-        var suitableCount = await _context.ApplyForms
-            .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 2)
-            .CountAsync();
-
-        // Thêm job posting với các thống kê vào danh sách DTO
-        jobSummaryDtos.Add(new GetMyJobPosting
+        public async Task<ActionResult<GetMyJobPosting>> GetJobPostingsByEmployer(int pageNumber = 1, int pageSize = 10)
         {
-            JobPostingID = jobPosting.JobPostingID,
-            CompanyLogo = jobPosting.Employer?.Avatar ?? "N/A",
-            Title = jobPosting.Title ?? "N/A",
-            Position = jobPosting.Position ?? "N/A",
-            Location = jobPosting.Location ?? "N/A",
-            Industry = jobPosting.JobIndustry ?? "N/A",
-            CreatedOn = jobPosting.CreatedOn,
-            LockFlg = jobPosting.LockFlg,
-            TimeRemaining = FormatTimeRemaining(jobPosting.Time),
-            TotalApplications = totalApplications,
-            NotReviewedCount = notReviewedCount,
-            NotSuitableCount = notSuitableCount,
-            SuitableCount = suitableCount
-        });
-    }
+            var employerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-    var totalPages = (int)Math.Ceiling(totalJobPostings / (double)pageSize);
+            if (string.IsNullOrEmpty(employerId))
+            {
+                return Unauthorized(new { error = "Employer ID not found in claims" });
+            }
 
-    return Ok(new
-    {
-        JobPostings = jobSummaryDtos,
-        TotalCount = totalJobPostings,
-        TotalPages = totalPages,
-        PageNumber = pageNumber,
-        PageSize = pageSize
-    });
-}
+            var employer = await _context.Employers
+                .Include(e => e.JobPostings)
+                .FirstOrDefaultAsync(e => e.EmployerID == employerId);
+
+            if (employer == null)
+            {
+                return NotFound(new { error = "Employer not found" });
+            }
+
+            var totalJobPostings = employer.JobPostings.Count(job => job.Status == true);
+
+            var jobPostings = employer.JobPostings
+                .Where(jp => jp.Status == true)
+                .OrderByDescending(jp => jp.Time)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize);
+
+            var jobSummaryDtos = new List<GetMyJobPosting>();
+
+            foreach (var jobPosting in jobPostings)
+            {
+                var totalApplications = await _context.ApplyForms
+                    .Where(af => af.JobPostingID == jobPosting.JobPostingID)
+                    .CountAsync();
+
+                var notReviewedCount = await _context.ApplyForms
+                    .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 0)
+                    .CountAsync();
+
+                var notSuitableCount = await _context.ApplyForms
+                    .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 1)
+                    .CountAsync();
+
+                var suitableCount = await _context.ApplyForms
+                    .Where(af => af.JobPostingID == jobPosting.JobPostingID && af.Status == 2)
+                    .CountAsync();
+
+                jobSummaryDtos.Add(new GetMyJobPosting
+                {
+                    JobPostingID = jobPosting.JobPostingID,
+                    CompanyLogo = jobPosting.Employer?.Avatar ?? "N/A",
+                    Title = jobPosting.Title ?? "N/A",
+                    Position = jobPosting.Position ?? "N/A",
+                    Location = jobPosting.Location ?? "N/A",
+                    Industry = jobPosting.JobIndustry ?? "N/A",
+                    CreatedOn = jobPosting.CreatedOn,
+                    LockFlg = jobPosting.LockFlg,
+                    TimeRemaining = FormatTimeRemaining(jobPosting.Time),
+                    TotalApplications = totalApplications,
+                    NotReviewedCount = notReviewedCount,
+                    NotSuitableCount = notSuitableCount,
+                    SuitableCount = suitableCount
+                });
+            }
+
+            var totalPages = (int)Math.Ceiling(totalJobPostings / (double)pageSize);
+
+            return Ok(new
+            {
+                JobPostings = jobSummaryDtos,
+                TotalCount = totalJobPostings,
+                TotalPages = totalPages,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            });
+        }
 
 
         [HttpGet("job-pending")]
@@ -565,8 +555,5 @@ public async Task<ActionResult<GetMyJobPosting>> GetJobPostingsByEmployer(int pa
 
             return Ok(new { message = "Employer unlocked successfully.", accountId = account.UserID });
         }
-
-
-
     }
 }

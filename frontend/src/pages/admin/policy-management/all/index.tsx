@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
-import { useRouter } from 'next/router';
 import { DeleteAPolicy, GetAllPolicy, UpdatePolicy } from '@/api/policyService';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination, Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } from '@mui/material';
 import { toast } from 'react-toastify';
@@ -20,10 +19,10 @@ const AllPolicyPage = () => {
     const [totalPages, setTotalPages] = useState(0); // Total number of pages
     const [userToken, setUserToken] = useState<string | null>(null);
 
-    const [open, setOpen] = useState(false); // Modal visibility
-    const [currentPolicy, setCurrentPolicy] = useState<Policy | null>(null); // Policy currently being edited
-    const [updatedTitle, setUpdatedTitle] = useState(""); // Title to update
-    const [updatedDescription, setUpdatedDescription] = useState(""); // Description to update
+    const [open, setOpen] = useState(false);
+    const [currentPolicy, setCurrentPolicy] = useState<Policy | null>(null);
+    const [updatedTitle, setUpdatedTitle] = useState("");
+    const [updatedDescription, setUpdatedDescription] = useState("");
 
     useEffect(() => {
         const token = localStorage.getItem('userToken');
@@ -85,12 +84,10 @@ const AllPolicyPage = () => {
                 title: updatedTitle,
                 description: updatedDescription
             };
-
-            // Send update request
             await UpdatePolicy(currentPolicy.policyID, updatedPolicy, userToken);
             toast.success('Policy updated successfully.');
             fetchPolicy();
-            setOpen(false); // Close modal
+            setOpen(false);
         } catch (error) {
             console.error('Error updating Policy:', error);
             toast.error('Failed to update the Policy. Please try again.');
@@ -192,8 +189,8 @@ const AllPolicyPage = () => {
                         onChange={(e) => setUpdatedDescription(e.target.value)}
                         margin="normal"
                         multiline
-                        rows={9}  // Set the number of visible rows
-                        sx={{ minHeight: '200px' }}  // Apply min height here
+                        rows={9}
+                        sx={{ minHeight: '200px' }}
                     />
 
                 </DialogContent>

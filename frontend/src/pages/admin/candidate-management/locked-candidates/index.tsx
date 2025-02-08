@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
 import { useRouter } from 'next/router';
-import { DeleteAJob, GetAllJobs } from '@/api/jobService';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination } from '@mui/material';
-import { DeleteASampleCV, GetAllSampleCV } from '@/api/sampleCVService';
-import { GetAvaiEmployer, LockAnEmployer } from '@/api/employerService'; 
-import { GetAvaiCandidate, GetLockedCandidate, LockACandidate, UnlockACandidate } from '@/api/candidateService';
+import { GetLockedCandidate, UnlockACandidate } from '@/api/candidateService';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -52,28 +49,26 @@ const LockedCandidatesPage = () => {
         setPageNumber(value);
     };
 
-    const handleViewDetail = (candidateID: string) => { 
+    const handleViewDetail = (candidateID: string) => {
         router.push(`/candidates/${candidateID}`);
-      };
+    };
 
-    const handleUnlock= async (candidateID: string) => {
+    const handleUnlock = async (candidateID: string) => {
         try {
             if (!userToken) {
                 console.error('User token not available.');
                 return;
             }
 
-            // Call API to delete employer
             const response: any = await UnlockACandidate(candidateID, userToken);
 
             console.log(response);
-            toast.success("Candidate unlocked successfully."); 
+            toast.success("Candidate unlocked successfully.");
 
-            // Refresh employer list
             fetchCandidate();
         } catch (error) {
             console.error('Error unlocking candidate:', error);
-            toast.error("Failed to unlock candidate. Please try again.");  
+            toast.error("Failed to unlock candidate. Please try again.");
         }
     };
 
@@ -104,12 +99,12 @@ const LockedCandidatesPage = () => {
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '5%' }}>No.</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '15%' }}>Name</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '10%' }}>Avatar</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>Phone Number</TableCell> 
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>Phone Number</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>Years of Experiences</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '20%' }}>Industry</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '15%' }}>Actions</TableCell>
                         </TableRow>
-                    </TableHead> 
+                    </TableHead>
 
                     <TableBody>
                         {candidate && candidate.length > 0 ? (
@@ -137,15 +132,15 @@ const LockedCandidatesPage = () => {
                                     {/* Industry */}
                                     <TableCell align="center" className="text-gray-600">
                                         {candidateItem.phoneNumber}
-                                    </TableCell> 
+                                    </TableCell>
 
-                                      {/* Location */}
-                                      <TableCell align="center" className="text-gray-600">
+                                    {/* Location */}
+                                    <TableCell align="center" className="text-gray-600">
                                         {candidateItem.experience}
                                     </TableCell>
 
-                                     {/* Location */}
-                                     <TableCell align="center" className="text-gray-600">
+                                    {/* Location */}
+                                    <TableCell align="center" className="text-gray-600">
                                         {candidateItem.industry}
                                     </TableCell>
 
@@ -153,7 +148,7 @@ const LockedCandidatesPage = () => {
                                     <TableCell align="center">
                                         {/* Lock Button */}
                                         <button
-                                               onClick={() => handleUnlock(candidateItem.candidateID)} // assuming handleLock is implemented for locking
+                                            onClick={() => handleUnlock(candidateItem.candidateID)}
                                             className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition mr-2"
                                         >
                                             Unlock
@@ -161,7 +156,7 @@ const LockedCandidatesPage = () => {
 
                                         {/* View Details Button */}
                                         <button
-                                             onClick={() => handleViewDetail(candidateItem.candidateID)} // assuming handleViewDetails is implemented for viewing details
+                                            onClick={() => handleViewDetail(candidateItem.candidateID)}
                                             className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-blue-600 transition"
                                         >
                                             View Details

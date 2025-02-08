@@ -8,17 +8,12 @@ namespace api.Models
     public class Account : IdentityUser
     {
         [Key]
-        public string UserID { get; set; } // Primary Key
-
+        public string UserID { get; set; }
         [Required]
-        public int AccountRole { get; set; } // 1: Candidate, 2: Employer, 3: Admin
-        
+        public int AccountRole { get; set; }
         [Required]
-        public bool Status { get; set; } // Account status (Active/Inactive)
-
-        // Depending on role, link to Candidate or Employer (optional for Admin)
+        public bool Status { get; set; }
         public virtual Candidate Candidate { get; set; }
         public virtual Employer Employer { get; set; }
- 
     }
 }

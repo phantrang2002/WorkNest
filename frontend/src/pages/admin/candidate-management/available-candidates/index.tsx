@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
 import { useRouter } from 'next/router';
-import { DeleteAJob, GetAllJobs } from '@/api/jobService';
 import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination } from '@mui/material';
-import { DeleteASampleCV, GetAllSampleCV } from '@/api/sampleCVService';
-import { GetAvaiEmployer, LockAnEmployer } from '@/api/employerService'; 
 import { GetAvaiCandidate, LockACandidate } from '@/api/candidateService';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 interface Candidate {
     candidateID: string;
@@ -51,28 +48,26 @@ const AvaiCandidatesPage = () => {
         setPageNumber(value);
     };
 
-    const handleViewDetail = (candidateID: string) => { 
+    const handleViewDetail = (candidateID: string) => {
         router.push(`/candidates/${candidateID}`);
-      };
+    };
 
-    const handleLock= async (candidateID: string) => {
+    const handleLock = async (candidateID: string) => {
         try {
             if (!userToken) {
                 console.error('User token not available.');
                 return;
             }
 
-            // Call API to delete employer
             const response: any = await LockACandidate(candidateID, userToken);
 
             console.log(response);
-            toast.success("Candidate locked successfully."); 
+            toast.success("Candidate locked successfully.");
 
-            // Refresh employer list
             fetchCandidate();
         } catch (error) {
             console.error('Error locking candidate:', error);
-            toast.error("Failed to lock candidate. Please try again.");  
+            toast.error("Failed to lock candidate. Please try again.");
         }
     };
 
@@ -103,12 +98,12 @@ const AvaiCandidatesPage = () => {
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '5%' }}>No.</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '15%' }}>Name</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'left', width: '10%' }}>Avatar</TableCell>
-                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>Phone Number</TableCell> 
+                            <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>Phone Number</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '10%' }}>Years of Experiences</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '20%' }}>Industry</TableCell>
                             <TableCell sx={{ fontWeight: 'bold', textAlign: 'center', width: '15%' }}>Actions</TableCell>
                         </TableRow>
-                    </TableHead> 
+                    </TableHead>
 
                     <TableBody>
                         {candidate && candidate.length > 0 ? (
@@ -136,15 +131,15 @@ const AvaiCandidatesPage = () => {
                                     {/* Industry */}
                                     <TableCell align="center" className="text-gray-600">
                                         {candidateItem.phoneNumber}
-                                    </TableCell> 
+                                    </TableCell>
 
-                                      {/* Location */}
-                                      <TableCell align="center" className="text-gray-600">
+                                    {/* Location */}
+                                    <TableCell align="center" className="text-gray-600">
                                         {candidateItem.experience}
                                     </TableCell>
 
-                                     {/* Location */}
-                                     <TableCell align="center" className="text-gray-600">
+                                    {/* Location */}
+                                    <TableCell align="center" className="text-gray-600">
                                         {candidateItem.industry}
                                     </TableCell>
 
@@ -152,7 +147,7 @@ const AvaiCandidatesPage = () => {
                                     <TableCell align="center">
                                         {/* Lock Button */}
                                         <button
-                                               onClick={() => handleLock(candidateItem.candidateID)} // assuming handleLock is implemented for locking
+                                            onClick={() => handleLock(candidateItem.candidateID)}
                                             className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition mr-2"
                                         >
                                             Lock
@@ -160,7 +155,7 @@ const AvaiCandidatesPage = () => {
 
                                         {/* View Details Button */}
                                         <button
-                                             onClick={() => handleViewDetail(candidateItem.candidateID)} // assuming handleViewDetails is implemented for viewing details
+                                            onClick={() => handleViewDetail(candidateItem.candidateID)}
                                             className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-blue-600 transition"
                                         >
                                             View Details

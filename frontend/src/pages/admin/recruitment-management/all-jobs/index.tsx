@@ -27,43 +27,43 @@ const AllJobPage = () => {
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
-        setUserToken(token); 
+      setUserToken(token);
     }
-}, []);
+  }, []);
 
-const fetchJobs = async () => {
-  try {
-    const response: any = await GetAllJobs(pageNumber, pageSize);
-    console.log(response);
-    setJobs(response.jobPostings);
-    setTotalPages(Math.ceil(response.totalCount / pageSize));
-  } catch (error) {
-    console.error('Error fetching jobs:', error);
-  }
-};
-
-const handleDownload = async () => {
-  try {
-    const fileBlob = await GetAllJobsDownload(); 
-    if (!(fileBlob instanceof Blob)) {
-      throw new Error('The downloaded file is not a valid Blob');
+  const fetchJobs = async () => {
+    try {
+      const response: any = await GetAllJobs(pageNumber, pageSize);
+      console.log(response);
+      setJobs(response.jobPostings);
+      setTotalPages(Math.ceil(response.totalCount / pageSize));
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
     }
+  };
 
-    const downloadLink = document.createElement('a');
-    const fileURL = URL.createObjectURL(fileBlob);
+  const handleDownload = async () => {
+    try {
+      const fileBlob = await GetAllJobsDownload();
+      if (!(fileBlob instanceof Blob)) {
+        throw new Error('The downloaded file is not a valid Blob');
+      }
 
-    downloadLink.href = fileURL;
-    downloadLink.download = `JobPosting_All_${new Date().toISOString().split('T')[0]}.xlsx`; 
+      const downloadLink = document.createElement('a');
+      const fileURL = URL.createObjectURL(fileBlob);
 
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
- 
-    URL.revokeObjectURL(fileURL);
-  } catch (error) {
-    console.error('Error downloading report:', error);
-  }
-};
+      downloadLink.href = fileURL;
+      downloadLink.download = `JobPosting_All_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+
+      URL.revokeObjectURL(fileURL);
+    } catch (error) {
+      console.error('Error downloading report:', error);
+    }
+  };
 
 
 
@@ -72,37 +72,34 @@ const handleDownload = async () => {
     fetchJobs();
   }, [pageNumber, pageSize]);
 
-  
-  const handleDelete = async (jobPostingID: string) => { 
+
+  const handleDelete = async (jobPostingID: string) => {
     try {
       if (!userToken) {
         console.error('User token not available.');
         return;
       }
-  
-      // Gọi API để xóa job posting
+
       const response: any = await DeleteAJob(jobPostingID, userToken);
-  
+
       console.log(response);
-  
-      // Thông báo thành công nếu cần
+
       toast.success('Job deleted successfully.');
-  
-      // Làm mới danh sách công việc
+
       fetchJobs();
     } catch (error) {
       console.error('Error deleting job:', error);
       toast.error('Failed to delete the job. Please try again.');
     }
   };
-  
-  const handleViewDetail = (jobPostingID: string) => { 
+
+  const handleViewDetail = (jobPostingID: string) => {
     router.push(`/jobs/${jobPostingID}`);
   };
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPageNumber(value);
-};
+  };
 
   return (
     <AdminLayout>
@@ -120,7 +117,7 @@ const handleDownload = async () => {
       </div>
 
       {/* Filter & Sorting Options */}
-      <div className="mb-4 flex items-center gap-6 text-gray-700"> 
+      <div className="mb-4 flex items-center gap-6 text-gray-700">
 
         <div className="flex items-center">
           <label htmlFor="sortCriteria" className="font-medium mr-2">Sort by:</label>
@@ -145,8 +142,8 @@ const handleDownload = async () => {
               <TableCell sx={{ fontWeight: 600 }}>Level</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Company</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Company Avatar</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Time Remaining</TableCell> 
-              <TableCell sx={{ fontWeight: 600 }}>Created On</TableCell> 
+              <TableCell sx={{ fontWeight: 600 }}>Time Remaining</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Created On</TableCell>
 
               <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
             </TableRow>
@@ -167,19 +164,19 @@ const handleDownload = async () => {
                 </TableCell>
                 <TableCell>{job.timeRemaining}</TableCell> {/* Display Time Remaining */}
                 <TableCell>
-                                                {new Date(job.createdOn).toLocaleString('en-CA', {
-                                                    year: 'numeric',
-                                                    month: '2-digit',
-                                                    day: '2-digit',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                    second: '2-digit',
-                                                    hour12: false
-                                                }).replace(',', '')}
-                                            </TableCell>
-                <TableCell> 
+                  {new Date(job.createdOn).toLocaleString('en-CA', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                  }).replace(',', '')}
+                </TableCell>
+                <TableCell>
                   <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 ml-2 transition"
-                  onClick={() => handleViewDetail(job.jobPostingID)}>View Details</button>
+                    onClick={() => handleViewDetail(job.jobPostingID)}>View Details</button>
                 </TableCell>
               </TableRow>
             ))}
@@ -187,14 +184,14 @@ const handleDownload = async () => {
         </Table>
       </TableContainer>
       <div className="flex justify-center mt-10 mb-5">
-                    <Pagination
-                        count={totalPages}
-                        page={pageNumber}
-                        onChange={handlePageChange}
-                        variant="outlined"
-                        shape="rounded"
-                    />
-                </div>               
+        <Pagination
+          count={totalPages}
+          page={pageNumber}
+          onChange={handlePageChange}
+          variant="outlined"
+          shape="rounded"
+        />
+      </div>
 
     </AdminLayout>
   );

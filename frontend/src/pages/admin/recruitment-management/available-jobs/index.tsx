@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '../../../../app/adminLayout';
 import { useRouter } from 'next/router';
 import { GetAvaiJobs, LockAJob } from '@/api/jobService';
-import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination, DialogTitle, Dialog, DialogContent, DialogActions, Button  } from '@mui/material';
+import { Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, Pagination, DialogTitle, Dialog, DialogContent, DialogActions, Button } from '@mui/material';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BsInfoSquareFill } from 'react-icons/bs';
@@ -24,14 +24,14 @@ const AvailableJobPage = () => {
   const [totalPages, setTotalPages] = useState(0); // Total number of pages
   const router = useRouter();
   const [userToken, setUserToken] = useState<string | null>(null);
-   // Modal state
-   const [openModal, setOpenModal] = useState(false);
+  // Modal state
+  const [openModal, setOpenModal] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     if (token) {
-        setUserToken(token); 
+      setUserToken(token);
     }
-}, []);
+  }, []);
 
   const fetchJobs = async () => {
     try {
@@ -44,60 +44,53 @@ const AvailableJobPage = () => {
     }
   };
 
-  useEffect(() => {   
+  useEffect(() => {
     fetchJobs();
   }, [pageNumber, pageSize]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPageNumber(value);
-};
+  };
 
-const handleLock = async (jobPostingID: string) => { 
-  try {
-    if (!userToken) {
-      console.error('User token not available.');
-      return;
+  const handleLock = async (jobPostingID: string) => {
+    try {
+      if (!userToken) {
+        console.error('User token not available.');
+        return;
+      }
+      const response: any = await LockAJob(jobPostingID, userToken);
+
+      console.log(response);
+
+      toast.success('Job locked successfully.');
+
+      fetchJobs();
+    } catch (error) {
+      console.error('Error locking job:', error);
+      toast.error('Failed to lock the job. Please try again.');
     }
-
-    // Gọi API để xóa job posting
-    const response: any = await LockAJob(jobPostingID, userToken);
-
-    console.log(response);
-
-    // Thông báo thành công nếu cần
-    toast.success('Job locked successfully.');
-
-    // Làm mới danh sách công việc
-    fetchJobs();
-  } catch (error) {
-    console.error('Error locking job:', error);
-    toast.error('Failed to lock the job. Please try again.');
-  }
-};
+  };
 
 
-const handleViewDetail = (jobPostingID: string) => { 
-  router.push(`/jobs/${jobPostingID}`);
-};
+  const handleViewDetail = (jobPostingID: string) => {
+    router.push(`/jobs/${jobPostingID}`);
+  };
 
-// Open Modal
-const handleOpenModal = () => {
-  setOpenModal(true);
-};
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
 
-// Close Modal
-const handleCloseModal = () => {
-  setOpenModal(false);
-};
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
 
   return (
     <AdminLayout>
-           <div className='flex  gap-2'>
-           <h1 className="text-3xl font-semibold mb-6 text-black-color">Recruitment Management</h1>
-           <BsInfoSquareFill className='text-gray-500'  onClick={handleOpenModal} />
+      <div className='flex  gap-2'>
+        <h1 className="text-3xl font-semibold mb-6 text-black-color">Recruitment Management</h1>
+        <BsInfoSquareFill className='text-gray-500' onClick={handleOpenModal} />
 
       </div>
-
 
       {/* Job Title Input and Buttons */}
       <div className="mb-6 flex items-center gap-4">
@@ -110,8 +103,8 @@ const handleCloseModal = () => {
         <button className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition">Export Report</button>
       </div>
 
-     {/* Filter & Sorting Options */}
-     <div className="mb-4 flex items-center gap-6 text-gray-700">        
+      {/* Filter & Sorting Options */}
+      <div className="mb-4 flex items-center gap-6 text-gray-700">
         <div className="flex items-center">
           <label htmlFor="sortCriteria" className="font-medium mr-2">Sort by:</label>
           <select
@@ -135,8 +128,8 @@ const handleCloseModal = () => {
               <TableCell sx={{ fontWeight: 600 }}>Level</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Company</TableCell>
               <TableCell sx={{ fontWeight: 600 }}>Company Avatar</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Time Remaining</TableCell> 
-              <TableCell sx={{ fontWeight: 600 }}>Created On</TableCell> 
+              <TableCell sx={{ fontWeight: 600 }}>Time Remaining</TableCell>
+              <TableCell sx={{ fontWeight: 600 }}>Created On</TableCell>
 
               <TableCell sx={{ fontWeight: 600 }}>Actions</TableCell>
             </TableRow>
@@ -157,21 +150,21 @@ const handleCloseModal = () => {
                 </TableCell>
                 <TableCell>{job.timeRemaining}</TableCell> {/* Display Time Remaining */}
                 <TableCell>
-                                                {new Date(job.createdOn).toLocaleString('en-CA', {
-                                                    year: 'numeric',
-                                                    month: '2-digit',
-                                                    day: '2-digit',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit',
-                                                    second: '2-digit',
-                                                    hour12: false
-                                                }).replace(',', '')}
-                                            </TableCell>
+                  {new Date(job.createdOn).toLocaleString('en-CA', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                  }).replace(',', '')}
+                </TableCell>
                 <TableCell>
-                  <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition" 
-                   onClick={() => handleLock(job.jobPostingID)}>Lock</button> 
-                  <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 ml-2 transition"  
-                  onClick={() => handleViewDetail(job.jobPostingID)}>View Details</button>
+                  <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                    onClick={() => handleLock(job.jobPostingID)}>Lock</button>
+                  <button className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 ml-2 transition"
+                    onClick={() => handleViewDetail(job.jobPostingID)}>View Details</button>
                 </TableCell>
               </TableRow>
             ))}
@@ -179,54 +172,51 @@ const handleCloseModal = () => {
         </Table>
       </TableContainer>
       <div className="flex justify-center mt-10 mb-5">
-                    <Pagination
-                        count={totalPages}
-                        page={pageNumber}
-                        onChange={handlePageChange}
-                        variant="outlined"
-                        shape="rounded"
-                    />
-                </div>               
-
- {/* Modal with Instructions */}
- <Dialog open={openModal} onClose={handleCloseModal}>
-  <DialogTitle>How to Use</DialogTitle>
- 
-  <DialogContent>
-  <div className=" text-sm text-gray-500 mb-4">
-      <p><strong>Note:</strong> This interface is best optimized for desktop viewing.</p>
-    </div>
-    {/* Container với Flexbox để xếp các nút ngang nhau */}
-    <div className="flex justify-center space-x-8 mt-4">
-      {/* Nút Approve */}
-      <div className="text-center">
-        <button 
-          className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-          disabled
-        >
-          Lock
-        </button>
-        <p className="mt-2 text-sm text-gray-600">When you click "Lock", the job will be approved and move to "Locked Jobs".</p>
-      </div> 
-
-      {/* Nút View Details */}
-      <div className="text-center">
-        <button 
-          className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
-          disabled
-        >
-          View Details
-        </button>
-        <p className="mt-2 text-sm text-gray-600">When you click "View Details", you will be redirected to the job's detail page.</p>
+        <Pagination
+          count={totalPages}
+          page={pageNumber}
+          onChange={handlePageChange}
+          variant="outlined"
+          shape="rounded"
+        />
       </div>
-    </div>
-  </DialogContent>
-  <DialogActions>
-    <Button onClick={handleCloseModal} color="primary">
-      Close
-    </Button>
-  </DialogActions>
-</Dialog>
+
+      {/* Modal with Instructions */}
+      <Dialog open={openModal} onClose={handleCloseModal}>
+        <DialogTitle>How to Use</DialogTitle>
+
+        <DialogContent>
+          <div className=" text-sm text-gray-500 mb-4">
+            <p><strong>Note:</strong> This interface is best optimized for desktop viewing.</p>
+          </div>
+          <div className="flex justify-center space-x-8 mt-4">
+            <div className="text-center">
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
+                disabled
+              >
+                Lock
+              </button>
+              <p className="mt-2 text-sm text-gray-600">When you click "Lock", the job will be approved and move to "Locked Jobs".</p>
+            </div>
+
+            <div className="text-center">
+              <button
+                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition"
+                disabled
+              >
+                View Details
+              </button>
+              <p className="mt-2 text-sm text-gray-600">When you click "View Details", you will be redirected to the job's detail page.</p>
+            </div>
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseModal} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
 
     </AdminLayout>
   );

@@ -2,21 +2,20 @@ namespace api.Dtos.Candidate
 {
     public class GetCandidateDto
     {
-        public string CandidateID { get; set; } // Candidate ID
+        public string CandidateID { get; set; }
 
-        public string Name { get; set; } // Candidate Name
+        public string Name { get; set; }
 
-        public string Avatar { get; set; } // Avatar image URL
+        public string Avatar { get; set; }
 
-        public string PhoneNumber { get; set; } // Candidate Phone
+        public string PhoneNumber { get; set; }
 
-        public string Location { get; set; } // Candidate Location
+        public string Location { get; set; }
 
-        public int Experience { get; set; } // Years of experience
+        public int Experience { get; set; }
 
-        public string Industry { get; set; } // Industry sector
+        public string Industry { get; set; }
 
-        public string Description { get; set; } // Short description
-
+        public string Description { get; set; }
     }
 }

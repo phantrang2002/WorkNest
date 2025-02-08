@@ -5,10 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using api.Dtos.SampleCV;
 using System.Security.Claims;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Formats.Png;
-using System.IO;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
@@ -224,9 +220,5 @@ namespace api.Controllers
                 return BadRequest($"An error occurred: {ex.Message}");
             }
         }
-
-
-
-
     }
 }

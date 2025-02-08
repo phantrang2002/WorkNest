@@ -1,4 +1,3 @@
-// frontend/src/pages/jobs/[jobId].tsx
 import { useEffect, useRef, useState } from 'react';
 import router, { useRouter } from 'next/router';
 import { GetJobPostingById, LockAJob } from '@/api/jobService';
@@ -50,12 +49,11 @@ const JobDetailPage = () => {
 
     const [hasApplied, setHasApplied] = useState<boolean>(false);
     const [jobDetails, setJobDetails] = useState<JobPosting | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);  // To handle loading state
+    const [loading, setLoading] = useState<boolean>(true);
     const [userToken, setUserToken] = useState<string | null>(null);
     const [userRole, setUserRole] = useState<number | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
 
-    // States for modal visibility and form data
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [userData, setUserData] = useState({
         fullName: '',
@@ -66,10 +64,9 @@ const JobDetailPage = () => {
     const [jobUrl, setJobUrl] = useState<string | string[]>('');
 
 
-    // This useEffect ensures that window is only accessed on the client-side
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            setJobUrl(window.location.href);  // Set the current URL on the client-side
+            setJobUrl(window.location.href);
         }
     }, []);
 
@@ -99,24 +96,22 @@ const JobDetailPage = () => {
         }
     };
 
-    // Function to handle opening the modal and fetching data
     const openModal = () => {
         if (userToken) {
             setIsModalOpen(true);
-            fetchUserInfo(userToken); // Fetch user data when modal is opened
+            fetchUserInfo(userToken);
         } else {
             console.error('No user token available');
         }
     };
-    // Function to handle closing the modal
+
     const closeModal = () => {
         setIsModalOpen(false);
     };
 
-    const [cvFile, setCvFile] = useState<File | null>(null);  // State to store the selected CV file
-    const fileInput = useRef<HTMLInputElement | null>(null);  // Reference to the file input element 
+    const [cvFile, setCvFile] = useState<File | null>(null);
+    const fileInput = useRef<HTMLInputElement | null>(null);
 
-    // Update cvFile state when a file is selected
     const handleFileChange = () => {
         if (fileInput.current?.files) {
             setCvFile(fileInput.current.files[0]);
@@ -129,17 +124,15 @@ const JobDetailPage = () => {
         if (cvFile) {
             const formData = new FormData();
             const storedJobId = window.location.pathname.split('/')[2];
-            //const storedJobId = localStorage.getItem('selectedJobId');
 
             if (!storedJobId) {
                 console.error('No job ID found');
-                return; // Handle case where JobPostingID is missing
+                return;
             }
 
-            formData.append('JobPostingID', storedJobId); // Ensure valid jobId
-            formData.append('CVFile', cvFile);  // Use cvFile from state
+            formData.append('JobPostingID', storedJobId);
+            formData.append('CVFile', cvFile);
 
-            // Log formData for debugging
             console.log('FormData:', formData);
 
             if (userToken) {
@@ -148,7 +141,6 @@ const JobDetailPage = () => {
                         toast.success("Applied successfully!");
                     })
                     .catch(error => {
-                        // Log error details for debugging
                         if (error.response) {
                             console.error("Error response:", error.response.data);
                             console.error("Error status:", error.response.status);
@@ -165,9 +157,7 @@ const JobDetailPage = () => {
     };
 
     const handleEditJob = () => {
-        //const storedJobId = localStorage.getItem('selectedJobId');
         const storedJobId = window.location.pathname.split('/')[2];
-
         router.push(`/edit-job/${storedJobId}`);
 
     };
@@ -195,7 +185,6 @@ const JobDetailPage = () => {
 
     useEffect(() => {
         const checkApplied = async () => {
-            // const storedJobId = localStorage.getItem('selectedJobId');
             const storedJobId = window.location.pathname.split('/')[2];
 
             if (storedJobId) {
@@ -205,10 +194,10 @@ const JobDetailPage = () => {
                 } catch (error) {
                     console.error('Error fetching applied:', error);
                 } finally {
-                    setLoading(false);  // Set loading to false after checking
+                    setLoading(false);
                 }
             } else {
-                setLoading(false);  // If no job id is stored
+                setLoading(false);
             }
         };
 
@@ -217,8 +206,6 @@ const JobDetailPage = () => {
 
     const fetchJobDetails = async () => {
         const storedJobId = window.location.pathname.split('/')[2];
-
-        // const storedJobId = localStorage.getItem('selectedJobId');
         if (storedJobId) {
             try {
                 const JobPosting: any = await GetJobPostingById(storedJobId);
@@ -301,7 +288,7 @@ const JobDetailPage = () => {
                         <div className="mt-6 ">
                             <div className="flex flex-col">
                                 <div className='flex items-start pb-2'>
-                                    <div className="w-1 bg-primary-color h-8 mr-2"></div> {/* Thanh dọc */}
+                                    <div className="w-1 bg-primary-color h-8 mr-2"></div>
                                     <h2 className="text-lg font-bold text-darker-color">Description</h2>
                                 </div>
                                 <div className="mt-2 text-black-color description-content" dangerouslySetInnerHTML={{ __html: jobDetails.description }}></div>
@@ -318,9 +305,9 @@ const JobDetailPage = () => {
                                 {/* Render button only if the job is not expired */}
                                 {jobDetails.timeRemaining !== "Expired" && jobDetails.lockFlg == 0 && jobDetails.status == true && (
                                     <button
-                                        onClick={openModal}  // Ensure openModal is defined and handles opening a modal
+                                        onClick={openModal}
                                         className={`w-[150px] text-white px-4 py-2 rounded-md mt-2 ${hasApplied ? 'bg-gray-500' : 'bg-primary-color'} hover:${hasApplied ? '' : 'bg-primary-color'}`}
-                                        disabled={hasApplied || loading}  // Disable the button if already applied or still loading
+                                        disabled={hasApplied || loading}
                                     >
                                         {hasApplied ? 'Applied' : 'Apply now'}
                                     </button>
@@ -331,53 +318,52 @@ const JobDetailPage = () => {
 
 
                         {isModalOpen && (
-                          <div className="modal-overlay">
-                          <div className="modal-content">
-                            <div className="modal-header">
-                              <button onClick={closeModal} className="close-button">X</button>
+                            <div className="modal-overlay">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <button onClick={closeModal} className="close-button">X</button>
+                                    </div>
+                                    <div className="modal-body">
+                                        <h2 className="text-black-color font-semibold pb-2 ">Job Application</h2>
+                                        <p className="modal-instructions">
+                                            Please fill out your information in the <Link href="/my-profile" className='text-primary-color'>profile page</Link> so that the recruiter can better understand your contact details and other relevant information.
+                                        </p>
+                                        <form onSubmit={handleSubmit}>
+                                            <div>
+                                                <label htmlFor="name" className="text-black-color">Name:</label>
+                                                <p className="text-info">{userData.fullName}</p>
+                                            </div>
+                                            <div>
+                                                <label htmlFor="email" className="text-black-color">Email:</label>
+                                                <p className="text-info">{userData.email}</p>
+                                            </div>
+                                            <div>
+                                                <label htmlFor="phoneNumber" className="text-black-color">Phone Number:</label>
+                                                <p className="text-info">{userData.phoneNumber}</p>
+                                            </div>
+                                            <div>
+                                                <label htmlFor="cv" className="text-black-color">CV (PDF only):</label>
+                                                <input
+                                                    type="file"
+                                                    ref={fileInput}
+                                                    className="text-black-color"
+                                                    accept=".pdf"
+                                                    onChange={handleFileChange}
+                                                    required
+                                                />
+                                            </div>
+                                            <button type="submit" className="submit-button bg-primary-color">
+                                                Submit Application
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="modal-body">
-                              <h2 className="text-black-color font-semibold pb-2 ">Job Application</h2>
-                              <p className="modal-instructions">
-                                Please fill out your information in the <Link href="/my-profile" className='text-primary-color'>profile page</Link> so that the recruiter can better understand your contact details and other relevant information.
-                              </p>
-                              <form onSubmit={handleSubmit}>
-                                <div>
-                                  <label htmlFor="name" className="text-black-color">Name:</label>
-                                  <p className="text-info">{userData.fullName}</p>
-                                </div>
-                                <div>
-                                  <label htmlFor="email" className="text-black-color">Email:</label>
-                                  <p className="text-info">{userData.email}</p>
-                                </div>
-                                <div>
-                                  <label htmlFor="phoneNumber" className="text-black-color">Phone Number:</label>
-                                  <p className="text-info">{userData.phoneNumber}</p>
-                                </div>
-                                <div>
-                                  <label htmlFor="cv" className="text-black-color">CV (PDF only):</label>
-                                  <input
-                                    type="file"
-                                    ref={fileInput}
-                                    className="text-black-color"
-                                    accept=".pdf"
-                                    onChange={handleFileChange}
-                                    required
-                                  />
-                                </div>
-                                <button type="submit" className="submit-button bg-primary-color">
-                                  Submit Application
-                                </button>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-                        
+
                         )}
 
                         {!userToken && (
                             <div className="flex flex-col items-center justify-center ">
-                                {/* Assuming salary is not in the provided data, you can adjust as needed */}
                                 <button onClick={handleLogin} className="w-[250px] bg-primary-color text-white px-4 py-2 rounded-md mt-2 hover:bg-primary-color">Sign In to Apply now</button>
                             </div>
                         )}
@@ -388,7 +374,7 @@ const JobDetailPage = () => {
 
                                 {jobDetails.lockFlg === 2 ? (
                                     <button
-                                        onClick={handleReopenJob} // Use a function to handle the "Reopen" action
+                                        onClick={handleReopenJob}
                                         className="w-[150px] bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
                                     >
                                         Re-open
@@ -400,7 +386,7 @@ const JobDetailPage = () => {
                                         </button>
 
                                         <button
-                                            onClick={() => setShowCloseModal(true)}// Function to handle the "Close Job" action
+                                            onClick={() => setShowCloseModal(true)}
                                             className="w-[150px] bg-red-600 text-white px-4 py-2 rounded-md hover:bg-secondary-color-dark"
                                         >
                                             Close Job
@@ -430,7 +416,7 @@ const JobDetailPage = () => {
                                     <img src={jobDetails.companyLogo} alt={`${jobDetails.companyName} Logo`} className="h-20 w-20 object-cover mr-4" />
                                 ) : (
                                     <div className="h-20 w-20 bg-gray-300 rounded-md mr-4 flex items-center justify-center">
-                                        <span className="text-gray-500">No Logo</span> {/* Hiển thị thông báo nếu không có logo */}
+                                        <span className="text-gray-500">No Logo</span>
                                     </div>
                                 )}
                                 <p className="text-lg font-semibold text-gray-700">{jobDetails.companyName}</p>
@@ -452,28 +438,26 @@ const JobDetailPage = () => {
                             </div>
 
                             <div className="mt-4 text-center">
-                            {userId === jobDetails.companyId ? (
-                                <a
-                                    href={`http://localhost:3000/my-company-profile`}
-                                    className="text-primary-color hover:text-yellow-color font-semibold"
-                                >
-                                    Find Out More
-                                </a>
-                            ) : (
-                                <a
-                                    href={`http://localhost:3000/employers/${jobDetails.companyId}`}
-                                    className="text-primary-color hover:text-yellow-color font-semibold"
-                                >
-                                    Find Out More
-                                </a>
-                            )}
+                                {userId === jobDetails.companyId ? (
+                                    <a
+                                        href={`http://localhost:3000/my-company-profile`}
+                                        className="text-primary-color hover:text-yellow-color font-semibold"
+                                    >
+                                        Find Out More
+                                    </a>
+                                ) : (
+                                    <a
+                                        href={`http://localhost:3000/employers/${jobDetails.companyId}`}
+                                        className="text-primary-color hover:text-yellow-color font-semibold"
+                                    >
+                                        Find Out More
+                                    </a>
+                                )}
 
                             </div>
 
 
                         </div>
-
-
 
                         {/* QR Code Section - Separate Card */}
                         <div className="bg-white rounded-lg shadow-lg p-8 mx-5 mb-8">
@@ -509,26 +493,24 @@ const CloseJobModal: React.FC<CloseJobModalProps> = ({ show, onClose, onConfirm 
 
     return (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center z-50">
-    <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-xl sm:mx-0 mx-5">
-        <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Are you sure you want to close this job?</h3>
-        <div className="flex justify-center gap-6">
-            <button
-                onClick={onConfirm}
-                className="bg-primary-color text-white px-8 py-3 rounded-lg hover:bg-yellow-color"
-            >
-                Yes
-            </button>
-            <button
-                onClick={onClose}
-                className="bg-gray-600 text-white px-8 py-3 rounded-lg hover:bg-yellow-color"
-            >
-                No
-            </button>
+            <div className="bg-white rounded-lg p-8 max-w-md w-full shadow-xl sm:mx-0 mx-5">
+                <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Are you sure you want to close this job?</h3>
+                <div className="flex justify-center gap-6">
+                    <button
+                        onClick={onConfirm}
+                        className="bg-primary-color text-white px-8 py-3 rounded-lg hover:bg-yellow-color"
+                    >
+                        Yes
+                    </button>
+                    <button
+                        onClick={onClose}
+                        className="bg-gray-600 text-white px-8 py-3 rounded-lg hover:bg-yellow-color"
+                    >
+                        No
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-
-    
     );
 };
 
