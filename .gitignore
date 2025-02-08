@@ -1,0 +1,46 @@
+# 📌 Ignore environment variables
+.env
+.env.local
+.env.development.local
+.env.production.local
+.env*.local
+
+# 📌 Ignore logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 📌 Ignore dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# 📌 Ignore testing & coverage reports
+coverage/
+TestResults/
+
+# 📌 Ignore API build files
+api/bin/
+api/obj/
+
+# 📌 Ignore appsettings.json của API
+api/appsettings.json
+
+# 📌 Ignore Next.js build files (Frontend)
+frontend/.next/
+frontend/out/
+frontend/.vercel/
+
+# 📌 Ignore production build output
+frontend/build/
+
+# 📌 Ignore system & IDE files
+.DS_Store
+*.pem
+.vscode/
+.idea/
+*.tsbuildinfo
+next-env.d.ts
