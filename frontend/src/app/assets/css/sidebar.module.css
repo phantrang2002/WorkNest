@@ -1,0 +1,107 @@
+.sidebar {
+  position: fixed; /* Keeps the sidebar fixed on the left */
+  top: 0;
+  left: 0;
+  width: 260px;
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
+.sidebar h2 {
+  font-size: 1.6em;
+  margin-bottom: 20px;
+  color: #ecf0f1;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase; /* More emphasis */
+  letter-spacing: 1px; /* Adds spacing for a cleaner look */
+}
+
+/* Menu Styling */
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1; /* Allow the menu to grow and push other elements down */
+}
+
+.menu li {
+  margin: 15px 0;
+}
+
+/* Styling for main menu items */
+.menu li a {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 1em;
+  display: block; /* Ensure <a> takes full width of <li> */
+  padding: 12px;
+  border-radius: 4px;
+  transition: background 0.3s ease, padding-left 0.3s ease;
+  width: 100%; /* Make sure the <a> tag takes full width of parent */
+  box-sizing: border-box;
+}
+
+.menu li a:hover {
+  background-color: #34495e;
+  padding-left: 16px;
+  color: #ecf0f1;
+}
+
+/* Style for submenu of recruitment management */
+.subMenu {
+  list-style: none; 
+  background-color: #34495e; /* Slightly darker to differentiate from main menu */
+  border-radius: 4px;
+  display: none; /* Default hidden */
+  margin-top: 5px;
+  transition: all 0.3s ease-in-out;
+  width: 100%; /* Ensure the submenu takes up full width of the sidebar */
+}
+
+.subMenu.open {
+  display: block; /* Show when the "open" class is added */
+}
+
+.subMenu li { 
+  width: 100%;
+  box-sizing: border-box;
+  transition: background 0.3s ease; /* Smooth transition for hover */
+}
+
+.subMenu li a {
+  color: #ecf0f1;
+  text-decoration: none;
+  display: block; /* Ensure <a> takes full width of <li> */
+  padding: 10px 20px; /* Increased padding for wider items */
+  width: 100%; /* Ensure <a> tag takes full width of parent */
+  box-sizing: border-box;
+}
+
+.subMenu li a:hover {
+  background-color: #1abc9c; /* Light green hover effect */
+  color: #fff;
+}
+
+/* Submenu toggle effect */
+.menuItem {
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.menuItem:hover {
+  background-color: #34495e;
+}
+
+.menuItem.active {
+  background-color: #2980b9; /* Highlight active menu */
+}

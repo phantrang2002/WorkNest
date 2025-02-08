@@ -1,0 +1,279 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary-color: #7860ee;
+  --brighter-color: #A07CEB;
+  --darker-color: #615887;
+  --yellow-color: #FF7F50;
+  --pastel-color: #B1A2E8;
+  --black-color: #030303;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-radial {
+      background: radial-gradient(circle, #ffffff, #f3eafa);
+  }
+}
+
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+  margin: 0; 
+  padding: 0;
+  background-color: white;
+}
+
+
+.site-header {
+  color: var(--black-color);
+  position: sticky;
+  z-index: 999; 
+  box-shadow: 0 -6px 10px 5px rgba(0,0,0,0.5);
+}
+
+.custom-radio {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 20px;
+  
+  font-size: 0.875rem;
+  position: relative;
+  color:var(--black-color);
+}
+
+.custom-radio input {
+  display: none; 
+}
+
+.custom-radio .checkmark {
+  height: 15px;
+  width: 15px;
+  background-color: #fff;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  margin-right: 8px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+.custom-radio.selected .checkmark {
+  border-color: var(--primary-color);
+  background-color: var(--primary-color); 
+}
+
+.custom-radio.selected input:checked + .checkmark {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+ 
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fefefe;
+  padding: 40px;
+  border-radius: 12px;
+  width: 450px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  position: relative;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-button:hover {
+  color: #e74c3c;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.modal-body form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.modal-body label {
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+.text-info {
+  font-size: 1rem;
+  color: #555;
+  padding: 8px 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.text-info, 
+.modal-body input[type="file"] {
+  font-size: 1rem;
+  color: #555;
+  padding: 8px 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  min-height: 40px; /* Đặt chiều cao tối thiểu */
+  display: flex;
+  align-items: center;
+}
+
+
+.modal-body input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.submit-button {
+  padding: 12px 20px;
+  font-size: 1rem;
+  color: white;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background: var(--darker-color)
+}
+
+.modal-instructions {
+  font-size: 0.9rem;
+  color: #666;
+  background: #f9f9f9;
+  padding: 10px;
+  border-left: 4px solid var(--primary-color);
+  margin-bottom: 20px;
+  border-radius: 5px;
+  line-height: 1.4;
+}
+
+
+/* CSS cho phần tử description */
+.description-content {
+  padding-left: 20px; /* Thêm padding trái cho nội dung */
+}
+
+.description-content ul {
+  list-style-type: disc; /* Đảm bảo sử dụng bullet points cho <ul> */
+  padding-left: 20px; /* Tạo khoảng cách cho bullet points */
+}
+
+.description-content ol {
+  list-style-type: decimal; /* Đảm bảo sử dụng số cho <ol> */
+  padding-left: 20px; /* Tạo khoảng cách cho số */
+}
+
+.description-content li {
+  margin-bottom: 0.5rem; /* Khoảng cách giữa các mục */
+}
+
+/* Nếu bạn muốn thay đổi màu sắc cho các tiêu đề */
+.description-content h1,
+.description-content h2 {
+  color: #333; /* Màu chữ của tiêu đề */
+}
+
+/* Đảm bảo các thẻ <strong> trong mô tả cũng được bôi đậm */
+.description-content strong {
+  font-weight: bold;
+} 
+
+  
+
+/* Thêm padding cho quill editor nếu cần */
+.ql-editor {
+  font-size: 16px;
+  min-height: 300px !important;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+  
+.table-container {
+  width: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-top: 16px;
+}
+
+.table-head {
+  background-color: #f5f5f5;
+}
+
+.table-row:hover {
+  background-color: #f1f1f1;
+}
+ 
+ 
